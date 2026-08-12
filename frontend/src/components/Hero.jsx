@@ -24,7 +24,7 @@ export default function Hero() {
       >
         <motion.div variants={item} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-violet/30 bg-violet/10 font-mono text-xs text-violet-light mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-teal animate-blink" />
-          8,700+ devs already inside
+          11,000+ devs already inside
         </motion.div>
 
         <motion.h1 variants={item} className="font-display font-bold text-5xl md:text-7xl leading-[1.05] text-mist">
