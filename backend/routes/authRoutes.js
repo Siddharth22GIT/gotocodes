@@ -47,4 +47,27 @@ router.get("/me", protect, async (req, res) => {
   res.json({ user: req.user.toSafeObject ? req.user.toSafeObject() : req.user });
 });
 
+// @route PUT /api/auth/change-password
+router.put("/change-password", protect, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ message: "New password must be at least 6 characters." });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    if (currentPassword && !(await user.matchPassword(currentPassword))) {
+      return res.status(400).json({ message: "Current password does not match." });
+    }
+
+    user.password = newPassword;
+    await user.save();
+    res.json({ message: "Password updated successfully." });
+  } catch (err) {
+    res.status(500).json({ message: "Could not update password.", error: err.message });
+  }
+});
+
 export default router;
