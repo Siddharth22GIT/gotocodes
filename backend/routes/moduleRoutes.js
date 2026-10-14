@@ -25,10 +25,14 @@ router.get("/", optionalAuth, async (req, res) => {
   const userTier = req.user ? req.user.tier : "free";
   const result = modules.map((m) => {
     const obj = m.toObject();
-    const lessonCount = obj.lessons.length;
-    const unlockedCount = obj.lessons.filter((l) => hasTierAccess(userTier, l.tier)).length;
-    delete obj.lessons;
-    return { ...obj, lessonCount, unlockedCount };
+    const lessons = (obj.lessons || []).map((l) => ({
+      title: l.title,
+      tier: l.tier,
+      locked: !hasTierAccess(userTier, l.tier),
+    }));
+    const lessonCount = obj.lessons ? obj.lessons.length : 0;
+    const unlockedCount = obj.lessons ? obj.lessons.filter((l) => hasTierAccess(userTier, l.tier)).length : 0;
+    return { ...obj, lessons, lessonCount, unlockedCount };
   });
   res.json(result);
 });

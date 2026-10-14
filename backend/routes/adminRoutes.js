@@ -4,6 +4,8 @@ import Resource from "../models/Resource.js";
 import Announcement from "../models/Announcement.js";
 import SiteSettings from "../models/SiteSettings.js";
 import User from "../models/User.js";
+import ResourceType from "../models/ResourceType.js";
+import ShortVideo from "../models/ShortVideo.js";
 import { protect, adminOnly } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -114,6 +116,41 @@ router.put("/users/:id/tier", async (req, res) => {
   ).select("-password");
   if (!user) return res.status(404).json({ message: "User not found." });
   res.json(user);
+});
+
+// ---------- Resource Types CRUD ----------
+router.get("/resource-types", async (req, res) => {
+  const types = await ResourceType.find().sort({ createdAt: 1 });
+  res.json(types);
+});
+
+router.post("/resource-types", async (req, res) => {
+  try {
+    const type = await ResourceType.create(req.body);
+    res.status(201).json(type);
+  } catch (err) {
+    res.status(400).json({ message: "Could not create resource type.", error: err.message });
+  }
+});
+
+// ---------- Short Videos CRUD ----------
+router.get("/shortvideos", async (req, res) => {
+  const videos = await ShortVideo.find().sort({ order: 1, createdAt: -1 });
+  res.json(videos);
+});
+
+router.post("/shortvideos", async (req, res) => {
+  try {
+    const video = await ShortVideo.create(req.body);
+    res.status(201).json(video);
+  } catch (err) {
+    res.status(400).json({ message: "Could not create short video.", error: err.message });
+  }
+});
+
+router.delete("/shortvideos/:id", async (req, res) => {
+  await ShortVideo.findByIdAndDelete(req.params.id);
+  res.json({ message: "Short video deleted." });
 });
 
 export default router;

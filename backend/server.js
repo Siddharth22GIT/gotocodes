@@ -13,12 +13,34 @@ import adminRoutes from "./routes/adminRoutes.js";
 dotenv.config();
 connectDB();
 
+import ResourceType from "./models/ResourceType.js";
+import ShortVideo from "./models/ShortVideo.js";
+
 const app = express();
 
 app.use(cors({ origin: process.env.CLIENT_URL || "*" }));
 app.use(express.json({ limit: "10mb" }));
 
 app.get("/api/health", (req, res) => res.json({ status: "ok", service: "gotocodes-api" }));
+
+// Public Resource Types and Short Videos
+app.get("/api/resource-types", async (req, res) => {
+  try {
+    const types = await ResourceType.find().sort({ createdAt: 1 });
+    res.json(types);
+  } catch (err) {
+    res.json([]);
+  }
+});
+
+app.get("/api/shortvideos", async (req, res) => {
+  try {
+    const videos = await ShortVideo.find().sort({ order: 1, createdAt: -1 });
+    res.json(videos);
+  } catch (err) {
+    res.json([]);
+  }
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/modules", moduleRoutes);

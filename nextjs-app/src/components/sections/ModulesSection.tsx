@@ -14,7 +14,9 @@ interface Module {
   description: string;
   bannerUrl?: string;
   tier: "free" | "basic" | "premium";
-  lessons: { _id?: string }[];
+  lessons?: { _id?: string }[];
+  lessonCount?: number;
+  unlockedCount?: number;
   order?: number;
 }
 
@@ -138,7 +140,7 @@ export default function ModulesSection({ modules, onOpenAdd }: ModulesSectionPro
 
                     <div className="flex items-center justify-between">
                       <span className="text-xs" style={{ fontFamily: "JetBrains Mono", color: "var(--mist-faint)" }}>
-                        {mod.lessons.length} lesson{mod.lessons.length !== 1 ? "s" : ""}
+                        {(mod.lessonCount ?? mod.lessons?.length ?? 0)} lesson{(mod.lessonCount ?? mod.lessons?.length ?? 0) !== 1 ? "s" : ""}
                       </span>
                       <span className="flex items-center gap-1.5 text-sm font-semibold group-hover:gap-2.5 transition-all text-white/60 group-hover:text-white">
                         Explore <ArrowRight size={14} />
