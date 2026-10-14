@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 import ShootingStars from "@/components/ui/ShootingStars";
 import SiteHeader from "@/components/layout/SiteHeader";
 import Footer from "@/components/layout/Footer";
@@ -164,6 +165,9 @@ const INITIAL_VIDEOS = [
 ];
 
 export default function Home() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+
   const [modules, setModules] = useState<any[]>(INITIAL_MODULES);
   const [resourceTypes, setResourceTypes] = useState<any[]>(INITIAL_RESOURCE_TYPES);
   const [resources, setResources] = useState<any[]>(INITIAL_RESOURCES);
@@ -236,19 +240,19 @@ export default function Home() {
 
         <ModulesSection
           modules={modules}
-          onOpenAdd={() => setIsAddModuleOpen(true)}
+          onOpenAdd={isAdmin ? () => setIsAddModuleOpen(true) : undefined}
         />
 
         <ResourcesSection
           resources={resources}
           resourceTypes={resourceTypes}
-          onOpenAddResource={() => setIsAddResourceOpen(true)}
-          onOpenAddType={() => setIsAddTypeOpen(true)}
+          onOpenAddResource={isAdmin ? () => setIsAddResourceOpen(true) : undefined}
+          onOpenAddType={isAdmin ? () => setIsAddTypeOpen(true) : undefined}
         />
 
         <ShortVideosSection
           videos={shortVideos}
-          onOpenAddVideo={() => setIsAddVideoOpen(true)}
+          onOpenAddVideo={isAdmin ? () => setIsAddVideoOpen(true) : undefined}
         />
 
         <PricingSection settings={settings} />
@@ -259,14 +263,16 @@ export default function Home() {
       {/* Footer */}
       <Footer />
 
-      {/* Admin Floating Quick Studio Bar */}
-      <AdminQuickBar
-        onOpenAddModule={() => setIsAddModuleOpen(true)}
-        onOpenAddResource={() => setIsAddResourceOpen(true)}
-        onOpenAddType={() => setIsAddTypeOpen(true)}
-        onOpenAddVideo={() => setIsAddVideoOpen(true)}
-        onOpenAnnouncement={() => setIsAnnouncementOpen(true)}
-      />
+      {/* Admin Floating Quick Studio Bar — only visible to admins */}
+      {isAdmin && (
+        <AdminQuickBar
+          onOpenAddModule={() => setIsAddModuleOpen(true)}
+          onOpenAddResource={() => setIsAddResourceOpen(true)}
+          onOpenAddType={() => setIsAddTypeOpen(true)}
+          onOpenAddVideo={() => setIsAddVideoOpen(true)}
+          onOpenAnnouncement={() => setIsAnnouncementOpen(true)}
+        />
+      )}
 
       {/* Admin Modals */}
       <ModuleAddModal

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Lock, Mail, ArrowRight, Zap, Shield, Sparkles } from "lucide-react";
+import { Lock, Mail, ArrowRight } from "lucide-react";
 import Button3D from "@/components/ui/Button3D";
 import GlowCard from "@/components/ui/GlowCard";
 import ShootingStars from "@/components/ui/ShootingStars";
@@ -26,44 +26,13 @@ export default function LoginPage() {
       await login(email, password);
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Invalid credentials. Try demo login below.");
+      setError(err?.response?.data?.message || "Invalid credentials. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDemoAdmin = async () => {
-    setEmail("admin@gotocodes.dev");
-    setPassword("admin123");
-    setLoading(true);
-    setError("");
-    try {
-      await login("admin@gotocodes.dev", "admin123");
-      router.push("/admin");
-    } catch (err) {
-      // In demo mode, bypass for instant access
-      localStorage.setItem("gotocodes_token", "demo_admin_jwt");
-      window.location.href = "/admin";
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const handleDemoStudent = async () => {
-    setEmail("student@gotocodes.dev");
-    setPassword("student123");
-    setLoading(true);
-    setError("");
-    try {
-      await login("student@gotocodes.dev", "student123");
-      router.push("/dashboard");
-    } catch (err) {
-      localStorage.setItem("gotocodes_token", "demo_student_jwt");
-      window.location.href = "/dashboard";
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[var(--ink-900)] text-[var(--mist)] flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
@@ -140,31 +109,6 @@ export default function LoginPage() {
               </Button3D>
             </div>
           </form>
-
-          {/* Quick Demo Access Bar */}
-          <div className="mt-6 pt-5 border-t border-white/10 space-y-2">
-            <p className="text-[11px] uppercase tracking-wider text-center font-bold text-neutral-500">
-              Instant 1-Click Access
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={handleDemoAdmin}
-                className="py-2 px-3 rounded-md text-xs font-semibold bg-white/5 hover:bg-white text-white hover:text-black border border-white/20 transition-all flex items-center justify-center gap-1.5"
-              >
-                <Shield size={12} />
-                Admin Demo
-              </button>
-              <button
-                type="button"
-                onClick={handleDemoStudent}
-                className="py-2 px-3 rounded-md text-xs font-semibold bg-white/5 hover:bg-white text-white hover:text-black border border-white/20 transition-all flex items-center justify-center gap-1.5"
-              >
-                <Sparkles size={12} />
-                Student Demo
-              </button>
-            </div>
-          </div>
 
           <p className="text-center text-xs text-neutral-400 mt-6">
             New to GotoCodes?{" "}
