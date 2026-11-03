@@ -24,7 +24,19 @@ router.get("/summary", async (req, res) => {
 });
 
 // ---------- Modules CRUD ----------
-router.get("/modules", async (req, res) => res.json(await Module.find().sort({ order: 1 })));
+router.get("/modules", async (req, res) => {
+  // Purge prebuilt modules if present
+  try {
+    const prebuiltTitles = [
+      "DSA Mastery: 0 to 100",
+      "C++ STL Blueprint & Speed",
+      "MERN Production Architecture",
+    ];
+    await Module.deleteMany({ title: { $in: prebuiltTitles } });
+  } catch (e) {}
+
+  res.json(await Module.find().sort({ order: 1, createdAt: 1 }));
+});
 
 router.post("/modules", async (req, res) => {
   try {
@@ -133,6 +145,17 @@ router.post("/resource-types", async (req, res) => {
   }
 });
 
+router.put("/resource-types/:id", async (req, res) => {
+  const type = await ResourceType.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  if (!type) return res.status(404).json({ message: "Resource type not found." });
+  res.json(type);
+});
+
+router.delete("/resource-types/:id", async (req, res) => {
+  await ResourceType.findByIdAndDelete(req.params.id);
+  res.json({ message: "Resource type deleted." });
+});
+
 // ---------- Short Videos CRUD ----------
 router.get("/shortvideos", async (req, res) => {
   const videos = await ShortVideo.find().sort({ order: 1, createdAt: -1 });
@@ -146,6 +169,12 @@ router.post("/shortvideos", async (req, res) => {
   } catch (err) {
     res.status(400).json({ message: "Could not create short video.", error: err.message });
   }
+});
+
+router.put("/shortvideos/:id", async (req, res) => {
+  const video = await ShortVideo.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+  if (!video) return res.status(404).json({ message: "Short video not found." });
+  res.json(video);
 });
 
 router.delete("/shortvideos/:id", async (req, res) => {

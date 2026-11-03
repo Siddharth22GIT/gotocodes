@@ -84,7 +84,8 @@ export default function ShortVideosSection({ videos, onOpenAddVideo }: ShortVide
                   style={{ height: "280px" }}
                 >
                   {video.bannerUrl ? (
-                    <Image src={video.bannerUrl} alt={video.title} fill className="object-cover" />
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={video.bannerUrl} alt={video.title} className="w-full h-full object-cover" />
                   ) : (
                     <div
                       className="w-full h-full flex items-center justify-center bg-neutral-900"

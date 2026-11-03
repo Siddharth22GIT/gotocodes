@@ -5,8 +5,11 @@ const resourceSchema = new mongoose.Schema(
     title: { type: String, required: true },
     description: { type: String, default: "" },
     category: { type: String, required: true }, // e.g. "DSA", "Resume", "Interview", "Project"
+    resourceType: { type: String, default: "pdf" },
     filePath: { type: String, default: "resource.pdf" }, // shown in terminal-card breadcrumb
     fileUrl: { type: String, default: "" }, // link to actual file / drive link
+    bannerUrl: { type: String, default: "" }, // cover image URL or data URI
+    coverImage: { type: String, default: "" }, // alias for bannerUrl
     tier: { type: String, enum: ["free", "basic", "premium"], default: "free" },
     price: { type: Number, default: 0 }, // for one-off sellable resources, in INR
     isSellable: { type: Boolean, default: false },

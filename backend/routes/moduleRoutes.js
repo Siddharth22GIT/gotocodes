@@ -1,13 +1,31 @@
 import express from "express";
+import mongoose from "mongoose";
 import Module from "../models/Module.js";
 import { optionalAuth, hasTierAccess } from "../middleware/auth.js";
 
 const router = express.Router();
 
+// One-time cleanup helper to purge the 3 prebuilt modules if present in database
+let cleanedPrebuilt = false;
+const cleanPrebuiltModules = async () => {
+  if (cleanedPrebuilt) return;
+  try {
+    const prebuiltTitles = [
+      "DSA Mastery: 0 to 100",
+      "C++ STL Blueprint & Speed",
+      "MERN Production Architecture",
+    ];
+    await Module.deleteMany({ title: { $in: prebuiltTitles } });
+    cleanedPrebuilt = true;
+  } catch (err) {
+    // ignore if db not connected yet
+  }
+};
+
 // Strip lesson content the user isn't entitled to, but still show it exists (locked).
 const sanitizeModule = (moduleDoc, userTier) => {
   const mod = moduleDoc.toObject();
-  mod.lessons = mod.lessons.map((lesson) => {
+  mod.lessons = (mod.lessons || []).map((lesson) => {
     const unlocked = hasTierAccess(userTier, lesson.tier);
     return {
       ...lesson,
@@ -21,6 +39,7 @@ const sanitizeModule = (moduleDoc, userTier) => {
 
 // @route GET /api/modules  (list, lightweight)
 router.get("/", optionalAuth, async (req, res) => {
+  await cleanPrebuiltModules();
   const modules = await Module.find().sort({ order: 1, createdAt: 1 });
   const userTier = req.user ? req.user.tier : "free";
   const result = modules.map((m) => {
@@ -39,7 +58,11 @@ router.get("/", optionalAuth, async (req, res) => {
 
 // @route GET /api/modules/:slug (full detail, tier-gated content)
 router.get("/:slug", optionalAuth, async (req, res) => {
-  const mod = await Module.findOne({ slug: req.params.slug });
+  await cleanPrebuiltModules();
+  let mod = await Module.findOne({ slug: req.params.slug });
+  if (!mod && mongoose.Types.ObjectId.isValid(req.params.slug)) {
+    mod = await Module.findById(req.params.slug);
+  }
   if (!mod) return res.status(404).json({ message: "Module not found." });
   const userTier = req.user ? req.user.tier : "free";
   res.json(sanitizeModule(mod, userTier));

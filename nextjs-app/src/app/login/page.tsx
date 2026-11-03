@@ -26,7 +26,11 @@ export default function LoginPage() {
       await login(email, password);
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Invalid credentials. Please try again.");
+      if (!err?.response) {
+        setError("Cannot connect to backend API server at http://localhost:5000. Please make sure the backend is running (in a terminal: cd backend && npm start).");
+      } else {
+        setError(err?.response?.data?.message || "Invalid credentials. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

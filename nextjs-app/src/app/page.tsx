@@ -26,41 +26,7 @@ const INITIAL_RESOURCE_TYPES = [
   { slug: "handwritten-notes", name: "Handwritten Notes", icon: "pen-tool", color: "#AAAAAA" },
 ];
 
-const INITIAL_MODULES = [
-  {
-    _id: "mod-1",
-    title: "DSA Mastery: 0 to 100",
-    slug: "dsa-mastery",
-    language: "DSA",
-    description: "Arrays, Linked Lists, Trees, Graphs, DP — with pattern breakdowns, visual memory maps and LeetCode problem sets.",
-    bannerUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80",
-    tier: "free" as const,
-    lessons: [{ _id: "l1" }, { _id: "l2" }, { _id: "l3" }, { _id: "l4" }],
-    order: 1,
-  },
-  {
-    _id: "mod-2",
-    title: "C++ STL Blueprint & Speed",
-    slug: "cpp-stl-blueprint",
-    language: "C++",
-    description: "Write ultra-fast C++ for competitive programming and technical rounds. Vectors, Maps, Sets, Iterators demystified.",
-    bannerUrl: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80",
-    tier: "basic" as const,
-    lessons: [{ _id: "l5" }, { _id: "l6" }],
-    order: 2,
-  },
-  {
-    _id: "mod-3",
-    title: "MERN Production Architecture",
-    slug: "mern-production-architecture",
-    language: "MERN",
-    description: "Build scalable real-world apps with React 19, Node.js, Express, MongoDB, Redis caching and secure JWT auth.",
-    bannerUrl: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80",
-    tier: "premium" as const,
-    lessons: [{ _id: "l7" }, { _id: "l8" }, { _id: "l9" }],
-    order: 3,
-  },
-];
+const INITIAL_MODULES: any[] = [];
 
 const INITIAL_RESOURCES = [
   {
@@ -190,7 +156,7 @@ export default function Home() {
   useEffect(() => {
     // Fetch live data from backend if available
     api.get("/modules").then((res) => {
-      if (res.data?.length > 0) setModules(res.data);
+      if (Array.isArray(res.data)) setModules(res.data);
     }).catch(() => {});
 
     api.get("/resource-types").then((res) => {

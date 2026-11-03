@@ -25,6 +25,7 @@ export interface ResourceData {
   title: string;
   description: string;
   bannerUrl?: string;
+  coverImage?: string;
   category: string;
   resourceType: string;
   fileUrl: string;
@@ -131,6 +132,7 @@ export default function ResourceAddModal({
       resourceType: selectedType,
       category: category.trim() || "General",
       bannerUrl: bannerUrl || customBannerUrl || PRESET_RESOURCE_COVERS[0].url,
+      coverImage: bannerUrl || customBannerUrl || PRESET_RESOURCE_COVERS[0].url,
       fileUrl: fileUrl.trim() || "#",
       tier,
       isSellable: tier !== "free",

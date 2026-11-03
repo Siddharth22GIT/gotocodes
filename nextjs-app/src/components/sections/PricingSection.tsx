@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Zap, Crown, Star, X, QrCode, Copy, ExternalLink } from "lucide-react";
+import { Check, Zap, Crown, Star, X, QrCode, Copy } from "lucide-react";
 import Button3D from "@/components/ui/Button3D";
 import GlowCard from "@/components/ui/GlowCard";
 import Modal from "@/components/ui/Modal";
@@ -71,42 +71,54 @@ function PaymentModal({ open, onClose, plan, settings }: PaymentModalProps) {
 
         {/* Payment Options */}
         <div>
-          <p className="text-sm font-semibold mb-3 text-white/80" style={{ fontFamily: "Space Grotesk" }}>
-            Pay via UPI
+          <p className="text-sm font-semibold mb-3 text-center text-white/90" style={{ fontFamily: "Space Grotesk" }}>
+            Scan to Pay ₹{plan?.price}
           </p>
 
-          {settings?.upiQrUrl && (
-            <div className="flex justify-center mb-4">
-              <div className="p-3 rounded-xl bg-white">
-                <img src={settings.upiQrUrl} alt="UPI QR Code" className="w-44 h-44 object-contain" />
-              </div>
+          <div className="flex flex-col items-center justify-center mb-4">
+            <div className="p-4 rounded-2xl bg-white shadow-2xl border-2 border-white/20 flex flex-col items-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={
+                  settings?.upiQrUrl ||
+                  `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(
+                    upiDeepLink !== "#" ? upiDeepLink : `upi://pay?pa=gotocodes@upi&am=${plan?.price}&cu=INR`
+                  )}&size=260x260`
+                }
+                alt="Scan to Pay QR Code"
+                className="w-52 h-52 object-contain"
+              />
+              <span className="text-[11px] font-bold text-neutral-800 tracking-wider uppercase mt-2 font-mono">
+                Scan with any UPI App
+              </span>
             </div>
-          )}
+          </div>
 
-          <div className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-white/[0.03]">
-            <QrCode size={18} className="text-white" />
+          <div className="flex items-center gap-3 p-3.5 rounded-xl border border-white/10 bg-white/[0.03]">
+            <QrCode size={18} className="text-white flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs mb-0.5 text-white/50" style={{ fontFamily: "JetBrains Mono" }}>UPI ID</p>
-              <p className="text-sm font-semibold text-white truncate" style={{ fontFamily: "JetBrains Mono" }}>
-                {settings?.upiId || "Not configured yet"}
+              <p className="text-sm font-semibold text-white truncate font-mono">
+                {settings?.upiId || "gotocodes@upi"}
               </p>
             </div>
             <button
               onClick={copyUpi}
-              className="p-2 rounded-lg transition-colors text-white/70 hover:text-white hover:bg-white/10"
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border border-white/20 hover:border-white bg-white/10 hover:bg-white text-white hover:text-black flex items-center gap-1.5 flex-shrink-0"
               title="Copy UPI ID"
             >
-              {copied ? <Check size={16} /> : <Copy size={16} />}
+              {copied ? (
+                <>
+                  <Check size={14} /> Copied!
+                </>
+              ) : (
+                <>
+                  <Copy size={14} /> Copy ID
+                </>
+              )}
             </button>
           </div>
 
-          {/* UPI App Deep Link Button */}
-          <a href={upiDeepLink} className="block mt-3">
-            <Button3D variant="primary" size="md" className="w-full" style={{ justifyContent: "center" }}>
-              <ExternalLink size={16} />
-              Pay ₹{plan?.price} via UPI App
-            </Button3D>
-          </a>
         </div>
 
         <div className="p-4 rounded-xl border border-white/15 bg-white/[0.04]">

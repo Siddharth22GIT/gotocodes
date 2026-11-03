@@ -11,7 +11,13 @@ router.get("/", optionalAuth, async (req, res) => {
   const result = resources.map((r) => {
     const obj = r.toObject();
     const unlocked = hasTierAccess(userTier, obj.tier);
-    return { ...obj, fileUrl: unlocked ? obj.fileUrl : "", locked: !unlocked };
+    return {
+      ...obj,
+      bannerUrl: obj.bannerUrl || obj.coverImage || "",
+      coverImage: obj.coverImage || obj.bannerUrl || "",
+      fileUrl: unlocked ? obj.fileUrl : "",
+      locked: !unlocked,
+    };
   });
   res.json(result);
 });
@@ -23,7 +29,13 @@ router.get("/:id", optionalAuth, async (req, res) => {
   const userTier = req.user ? req.user.tier : "free";
   const obj = r.toObject();
   const unlocked = hasTierAccess(userTier, obj.tier);
-  res.json({ ...obj, fileUrl: unlocked ? obj.fileUrl : "", locked: !unlocked });
+  res.json({
+    ...obj,
+    bannerUrl: obj.bannerUrl || obj.coverImage || "",
+    coverImage: obj.coverImage || obj.bannerUrl || "",
+    fileUrl: unlocked ? obj.fileUrl : "",
+    locked: !unlocked,
+  });
 });
 
 export default router;

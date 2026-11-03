@@ -11,6 +11,9 @@ const siteSettingsSchema = new mongoose.Schema(
     },
     basicPriceINR: { type: Number, default: 149 },
     premiumPriceINR: { type: Number, default: 349 },
+    upiId: { type: String, default: "gotocodes@upi" },
+    upiName: { type: String, default: "GotoCodes Education" },
+    upiQrUrl: { type: String, default: "" },
   },
   { timestamps: true }
 );

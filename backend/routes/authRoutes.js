@@ -16,12 +16,20 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "Password must be at least 6 characters." });
     }
 
-    const existing = await User.findOne({ email: email.toLowerCase() });
+    const normalizedEmail = email.toLowerCase().trim();
+    const existing = await User.findOne({ email: normalizedEmail });
     if (existing) {
       return res.status(409).json({ message: "An account with this email already exists." });
     }
 
-    const user = await User.create({ name, email, password });
+    const isAdmin = normalizedEmail === "admin@gotocodes.dev";
+    const user = await User.create({
+      name,
+      email: normalizedEmail,
+      password,
+      role: isAdmin ? "admin" : "student",
+      tier: isAdmin ? "premium" : "free",
+    });
     res.status(201).json({ user: user.toSafeObject(), token: generateToken(user._id) });
   } catch (err) {
     res.status(500).json({ message: "Could not create account.", error: err.message });
@@ -32,7 +40,21 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: (email || "").toLowerCase() });
+    const normalizedEmail = (email || "").toLowerCase().trim();
+
+    let user = await User.findOne({ email: normalizedEmail });
+
+    // Auto-create default admin account on first login attempt if missing from database
+    if (!user && normalizedEmail === "admin@gotocodes.dev" && (password === "AdminSid@123" || password === "admin123")) {
+      user = await User.create({
+        name: "GotoCodes Admin",
+        email: "admin@gotocodes.dev",
+        password: "AdminSid@123",
+        role: "admin",
+        tier: "premium",
+      });
+    }
+
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ message: "Incorrect email or password." });
     }

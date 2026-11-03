@@ -100,11 +100,11 @@ export default function ModulesSection({ modules, onOpenAdd }: ModulesSectionPro
                   {/* Banner */}
                   <div className="relative h-44 overflow-hidden">
                     {mod.bannerUrl ? (
-                      <Image
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
                         src={mod.bannerUrl}
                         alt={mod.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
                       <div className={`w-full h-full bg-gradient-to-br ${getGradient(mod.language)} flex items-center justify-center`}>

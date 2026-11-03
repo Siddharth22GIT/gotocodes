@@ -11,6 +11,7 @@ interface Resource {
   title: string;
   description: string;
   bannerUrl?: string;
+  coverImage?: string;
   category: string;
   resourceType: string;
   fileUrl: string;
@@ -152,8 +153,13 @@ export default function ResourcesSection({
                 <GlowCard noPadding className="w-full h-full min-w-0 flex flex-col group overflow-hidden rounded-xl border border-white/10 hover:border-white/30 transition-all">
                   {/* Banner */}
                   <div className="relative h-40 w-full overflow-hidden bg-neutral-900 flex-shrink-0">
-                    {resource.bannerUrl ? (
-                      <Image src={resource.bannerUrl} alt={resource.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                    {resource.bannerUrl || resource.coverImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={resource.bannerUrl || resource.coverImage}
+                        alt={resource.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-neutral-900">
                         <TypeIcon icon={types.find(t => t.slug === resource.resourceType)?.icon || "file-text"} color="#CCCCCC" size={36} />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   Shield,
@@ -13,6 +13,7 @@ import {
   Users,
   Plus,
   Trash2,
+  Pencil,
   ExternalLink,
   Mail,
   Send,
@@ -23,6 +24,7 @@ import {
   Settings,
   FileText,
   PenTool,
+  Upload,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -31,10 +33,14 @@ import Button3D from "@/components/ui/Button3D";
 import ShootingStars from "@/components/ui/ShootingStars";
 
 import ModuleAddModal from "@/components/admin/ModuleAddModal";
+import ModuleEditModal from "@/components/admin/ModuleEditModal";
 import ResourceAddModal from "@/components/admin/ResourceAddModal";
+import ResourceEditModal from "@/components/admin/ResourceEditModal";
 import ResourceTypeModal from "@/components/admin/ResourceTypeModal";
 import ShortVideoAddModal from "@/components/admin/ShortVideoAddModal";
+import ShortVideoEditModal from "@/components/admin/ShortVideoEditModal";
 import AnnouncementModal from "@/components/admin/AnnouncementModal";
+import AnnouncementEditModal from "@/components/admin/AnnouncementEditModal";
 import api from "@/lib/api";
 
 export default function AdminPage() {
@@ -50,8 +56,8 @@ export default function AdminPage() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [usersList, setUsersList] = useState<any[]>([]);
   const [settings, setSettings] = useState({
-    basicPriceINR: 499,
-    premiumPriceINR: 1499,
+    basicPriceINR: 149,
+    premiumPriceINR: 349,
     upiId: "gotocodes@upi",
     upiName: "GotoCodes Education",
     upiQrUrl: "",
@@ -60,24 +66,38 @@ export default function AdminPage() {
   });
 
   const [settingsSaved, setSettingsSaved] = useState(false);
+  const qrFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Modals state
+  // Modals state - Add
   const [isAddModuleOpen, setIsAddModuleOpen] = useState(false);
   const [isAddResourceOpen, setIsAddResourceOpen] = useState(false);
   const [isAddTypeOpen, setIsAddTypeOpen] = useState(false);
   const [isAddVideoOpen, setIsAddVideoOpen] = useState(false);
   const [isAnnouncementOpen, setIsAnnouncementOpen] = useState(false);
 
+  // Modals state - Edit
+  const [editingModule, setEditingModule] = useState<any | null>(null);
+  const [isEditModuleOpen, setIsEditModuleOpen] = useState(false);
+
+  const [editingResource, setEditingResource] = useState<any | null>(null);
+  const [isEditResourceOpen, setIsEditResourceOpen] = useState(false);
+
+  const [editingVideo, setEditingVideo] = useState<any | null>(null);
+  const [isEditVideoOpen, setIsEditVideoOpen] = useState(false);
+
+  const [editingAnnouncement, setEditingAnnouncement] = useState<any | null>(null);
+  const [isEditAnnouncementOpen, setIsEditAnnouncementOpen] = useState(false);
+
   // Fetch all admin data
   const fetchAllData = () => {
-    api.get("/admin/modules").then((res) => setModules(res.data)).catch(() => {
-      // Demo fallback
-      setModules([
-        { _id: "m1", title: "DSA Mastery: 0 to 100", language: "DSA", tier: "free", lessons: [1, 2, 3] },
-        { _id: "m2", title: "C++ STL Blueprint & Speed", language: "C++", tier: "basic", lessons: [1, 2] },
-        { _id: "m3", title: "MERN Production Architecture", language: "MERN", tier: "premium", lessons: [1, 2, 3, 4] },
-      ]);
-    });
+    // Modules: fetch from backend, fallback to empty array (no prebuilt demo modules)
+    api.get("/admin/modules")
+      .then((res) => {
+        if (Array.isArray(res.data)) setModules(res.data);
+      })
+      .catch(() => {
+        setModules([]);
+      });
 
     api.get("/admin/resource-types").then((res) => setResourceTypes(res.data)).catch(() => {
       setResourceTypes([
@@ -87,47 +107,17 @@ export default function AdminPage() {
       ]);
     });
 
-    api.get("/admin/resources").then((res) => setResources(res.data)).catch(() => {
-      setResources([
-        { 
-          _id: "r1", 
-          title: "Ultimate DSA Patterns & Formulas Sheet", 
-          resourceType: "pdf", 
-          category: "DSA", 
-          tier: "free",
-          bannerUrl: "https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?w=800&auto=format&fit=crop&q=80",
-        },
-        { 
-          _id: "r2", 
-          title: "Modern JavaScript Under The Hood", 
-          resourceType: "ebook", 
-          category: "JS", 
-          tier: "basic",
-          bannerUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=80",
-        },
-        { 
-          _id: "r3", 
-          title: "Operating Systems Handwritten Notes", 
-          resourceType: "handwritten-notes", 
-          category: "Core", 
-          tier: "free",
-          bannerUrl: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&auto=format&fit=crop&q=80",
-        },
-      ]);
-    });
+    api.get("/admin/resources").then((res) => {
+      if (Array.isArray(res.data)) setResources(res.data);
+    }).catch(() => {});
 
-    api.get("/admin/shortvideos").then((res) => setShortVideos(res.data)).catch(() => {
-      setShortVideos([
-        { _id: "v1", title: "How Two Pointers Works in 45 Seconds", instagramLink: "https://instagram.com" },
-        { _id: "v2", title: "Stop Using console.log Like This!", instagramLink: "https://instagram.com" },
-      ]);
-    });
+    api.get("/admin/shortvideos").then((res) => {
+      if (Array.isArray(res.data)) setShortVideos(res.data);
+    }).catch(() => {});
 
-    api.get("/admin/announcements").then((res) => setAnnouncements(res.data)).catch(() => {
-      setAnnouncements([
-        { _id: "a1", title: "🚀 Welcome to the Brand New GotoCodes!", audience: "all", createdAt: new Date().toISOString() },
-      ]);
-    });
+    api.get("/admin/announcements").then((res) => {
+      if (Array.isArray(res.data)) setAnnouncements(res.data);
+    }).catch(() => {});
 
     api.get("/settings").then((res) => {
       if (res.data) setSettings((prev) => ({ ...prev, ...res.data }));
@@ -170,9 +160,17 @@ export default function AdminPage() {
     setShortVideos((prev) => prev.filter((v) => v._id !== id));
   };
 
+  const handleDeleteAnnouncement = async (id: string) => {
+    if (!confirm("Delete this announcement?")) return;
+    try {
+      await api.delete(`/admin/announcements/${id}`);
+    } catch (err) {}
+    setAnnouncements((prev) => prev.filter((a) => a._id !== id));
+  };
+
   const handleSendAnnouncementEmail = async (id: string) => {
     try {
-      const res = await api.post(`/admin/announcements/${id}/send-email`);
+      await api.post(`/admin/announcements/${id}/send-email`);
       alert("Broadcast email sent to users successfully!");
     } catch (err: any) {
       alert("Simulated: Email broadcast delivered to all active users!");
@@ -186,6 +184,21 @@ export default function AdminPage() {
     setUsersList((prev) =>
       prev.map((u) => (u._id === userId ? { ...u, tier: newTier } : u))
     );
+  };
+
+  const handleQrUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("QR Code image must be less than 5MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSettings((prev) => ({ ...prev, upiQrUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
@@ -215,7 +228,7 @@ export default function AdminPage() {
               GotoCodes Studio & Management
             </h1>
             <p className="text-sm text-neutral-400 mt-1">
-              Effortlessly manage modules, resources, short videos, announcements, and UPI payments.
+              Add, edit, and manage modules, resources, short videos, announcements, and UPI payments.
             </p>
           </div>
 
@@ -234,7 +247,7 @@ export default function AdminPage() {
             { id: "resources", label: `Resources (${resources.length})`, icon: Download },
             { id: "videos", label: `Short Videos (${shortVideos.length})`, icon: Film },
             { id: "announcements", label: `Announcements (${announcements.length})`, icon: Megaphone },
-            { id: "payment", label: "UPI & Settings", icon: CreditCard },
+            { id: "payment", label: "UPI Settings", icon: CreditCard },
             { id: "users", label: `Users (${usersList.length})`, icon: Users },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -313,7 +326,7 @@ export default function AdminPage() {
                   Learning Modules
                 </h3>
                 <p className="text-xs text-[var(--mist-dim)]">
-                  Add, edit, or remove curriculum modules from the website.
+                  Add, edit, or remove your customized curriculum modules.
                 </p>
               </div>
               <Button3D onClick={() => setIsAddModuleOpen(true)} size="sm">
@@ -321,54 +334,84 @@ export default function AdminPage() {
               </Button3D>
             </div>
 
-            <div className="grid gap-4">
-              {modules.map((m) => (
-                <div
-                  key={m._id}
-                  className="p-4 rounded-2xl border border-white/10 bg-white/[0.02] flex items-center justify-between gap-4"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-neutral-900 flex-shrink-0 relative border border-white/10">
-                      {m.bannerUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={m.bannerUrl} alt={m.title} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-white/10 text-white font-bold">
-                          {m.language || "DSA"}
+            {modules.length === 0 ? (
+              <div className="p-12 text-center rounded-2xl border border-dashed border-white/10 bg-white/[0.01]">
+                <BookOpen size={36} className="mx-auto text-neutral-500 mb-3 opacity-40" />
+                <h4 className="text-base font-bold text-white">No modules added yet</h4>
+                <p className="text-xs text-neutral-400 max-w-sm mx-auto mt-1 mb-4">
+                  Get started by creating your first module with Reading Material capsules, Short Videos, and Hand-written notes.
+                </p>
+                <Button3D onClick={() => setIsAddModuleOpen(true)} size="sm" variant="primary">
+                  <Plus size={14} className="mr-1" /> Create Your First Module
+                </Button3D>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {modules.map((m) => (
+                  <div
+                    key={m._id}
+                    className="p-4 rounded-2xl border border-white/10 bg-white/[0.02] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-neutral-900 flex-shrink-0 relative border border-white/10">
+                        {m.bannerUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={m.bannerUrl} alt={m.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-white/10 text-white font-bold">
+                            {m.language || "DSA"}
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-white text-base">{m.title}</h4>
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                          <span className="badge badge-violet text-[10px]">{m.language || "Tech"}</span>
+                          <span className="badge badge-violet text-[10px] uppercase font-bold">{m.tier}</span>
+                          <span className="text-[11px] text-neutral-400 font-mono">
+                            📄 {m.readingMaterials?.length || 0} PDFs
+                          </span>
+                          <span className="text-[11px] text-neutral-400 font-mono">
+                            🎬 {m.shortVideos?.length || 0} Videos
+                          </span>
+                          <span className="text-[11px] text-neutral-400 font-mono">
+                            ✍️ {m.handwrittenNotes?.length || 0} Notes
+                          </span>
                         </div>
-                      )}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-white text-base">{m.title}</h4>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="badge badge-violet text-[10px]">{m.language || "Tech"}</span>
-                        <span className="badge badge-violet text-[10px] uppercase font-bold">{m.tier}</span>
-                        <span className="text-[11px] text-neutral-400 font-mono">
-                          {m.lessons?.length || 0} lessons
-                        </span>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href={`/modules/${m.slug || m._id}`}
-                      className="p-2 rounded-xl text-[var(--mist-dim)] hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
-                      title="Preview Module"
-                    >
-                      <ExternalLink size={16} />
-                    </Link>
-                    <button
-                      onClick={() => handleDeleteModule(m._id)}
-                      className="p-2 rounded-xl text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 transition-colors"
-                      title="Delete Module"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="flex items-center gap-2 self-end sm:self-center">
+                      <Link
+                        href={`/modules/${m.slug || m._id}`}
+                        className="p-2 rounded-xl text-[var(--mist-dim)] hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
+                        title="Preview Module"
+                      >
+                        <ExternalLink size={16} />
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setEditingModule(m);
+                          setIsEditModuleOpen(true);
+                        }}
+                        className="p-2 rounded-xl text-white/80 hover:text-white bg-white/5 hover:bg-white/15 transition-colors flex items-center gap-1.5 text-xs font-semibold"
+                        title="Edit Module"
+                      >
+                        <Pencil size={15} />
+                        <span className="hidden sm:inline">Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteModule(m._id)}
+                        className="p-2 rounded-xl text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 transition-colors"
+                        title="Delete Module"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -381,7 +424,7 @@ export default function AdminPage() {
                   Resources & Categories
                 </h3>
                 <p className="text-xs text-[var(--mist-dim)]">
-                  Segregate resources into PDFs, Ebooks, Handwritten Notes, or add custom types.
+                  Add, edit, or remove PDFs, Ebooks, Handwritten Notes with custom cover images.
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -412,46 +455,63 @@ export default function AdminPage() {
 
             {/* Resources List */}
             <div className="grid gap-3">
-              {resources.map((r) => (
-                <div
-                  key={r._id}
-                  className="p-4 rounded-xl border border-white/10 bg-white/[0.02] flex items-center justify-between gap-4"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-neutral-900 flex-shrink-0 relative border border-white/10">
-                      {r.bannerUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={r.bannerUrl} alt={r.title} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-white/10 text-white">
-                          {r.resourceType === "handwritten-notes" ? (
-                            <PenTool size={20} />
-                          ) : r.resourceType === "ebook" ? (
-                            <BookOpen size={20} />
-                          ) : (
-                            <FileText size={20} />
-                          )}
+              {resources.map((r) => {
+                const cover = r.bannerUrl || r.coverImage;
+                return (
+                  <div
+                    key={r._id}
+                    className="p-4 rounded-xl border border-white/10 bg-white/[0.02] flex items-center justify-between gap-4"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-lg overflow-hidden bg-neutral-900 flex-shrink-0 relative border border-white/10">
+                        {cover ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={cover} alt={r.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-white/10 text-white">
+                            {r.resourceType === "handwritten-notes" ? (
+                              <PenTool size={20} />
+                            ) : r.resourceType === "ebook" ? (
+                              <BookOpen size={20} />
+                            ) : (
+                              <FileText size={20} />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-white text-sm">{r.title}</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="badge badge-violet text-[10px] uppercase font-bold">{r.resourceType}</span>
+                          <span className="text-[11px] text-neutral-400">{r.category}</span>
+                          <span className="badge badge-violet text-[10px] uppercase">{r.tier}</span>
                         </div>
-                      )}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-white text-sm">{r.title}</h4>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="badge badge-violet text-[10px] uppercase font-bold">{r.resourceType}</span>
-                        <span className="text-[11px] text-neutral-400">{r.category}</span>
-                        <span className="badge badge-violet text-[10px] uppercase">{r.tier}</span>
                       </div>
                     </div>
-                  </div>
 
-                  <button
-                    onClick={() => handleDeleteResource(r._id)}
-                    className="p-2 rounded-xl text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 transition-colors"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              ))}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingResource(r);
+                          setIsEditResourceOpen(true);
+                        }}
+                        className="p-2 rounded-xl text-white/80 hover:text-white bg-white/5 hover:bg-white/15 transition-colors flex items-center gap-1.5 text-xs font-semibold"
+                        title="Edit Resource"
+                      >
+                        <Pencil size={15} />
+                        <span className="hidden sm:inline">Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteResource(r._id)}
+                        className="p-2 rounded-xl text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 transition-colors"
+                        title="Delete Resource"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -465,7 +525,7 @@ export default function AdminPage() {
                   Short Videos (Instagram Reels)
                 </h3>
                 <p className="text-xs text-[var(--mist-dim)]">
-                  Vertical bite-sized videos with hidden links.
+                  Vertical bite-sized videos. Add, edit, or remove reel cards.
                 </p>
               </div>
               <Button3D
@@ -479,33 +539,49 @@ export default function AdminPage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {shortVideos.map((v) => (
-                <div key={v._id} className="p-3 rounded-2xl border border-white/10 bg-white/[0.02]">
-                  <div className="relative rounded-xl overflow-hidden mb-3" style={{ aspectRatio: "9/16" }}>
-                    {v.bannerUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={v.bannerUrl} alt={v.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                        <Film size={24} className="text-white" />
-                      </div>
-                    )}
+                <div key={v._id} className="p-3 rounded-2xl border border-white/10 bg-white/[0.02] flex flex-col justify-between">
+                  <div>
+                    <div className="relative rounded-xl overflow-hidden mb-3" style={{ aspectRatio: "9/16" }}>
+                      {v.bannerUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={v.bannerUrl} alt={v.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-white/5 flex items-center justify-center">
+                          <Film size={24} className="text-white" />
+                        </div>
+                      )}
+                    </div>
+                    <h4 className="font-bold text-white text-xs line-clamp-2 mb-2">{v.title}</h4>
                   </div>
-                  <h4 className="font-bold text-white text-xs line-clamp-2 mb-2">{v.title}</h4>
-                  <div className="flex items-center justify-between pt-2 border-t border-white/10">
+
+                  <div className="flex items-center justify-between pt-2 border-t border-white/10 mt-2">
                     <a
                       href={v.instagramLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[11px] text-white/90 hover:text-white hover:underline flex items-center gap-1 font-semibold"
                     >
-                      <ExternalLink size={11} /> Test Reel
+                      <ExternalLink size={11} /> Reel
                     </a>
-                    <button
-                      onClick={() => handleDeleteVideo(v._id)}
-                      className="text-red-400 hover:text-red-300 p-1"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => {
+                          setEditingVideo(v);
+                          setIsEditVideoOpen(true);
+                        }}
+                        className="text-white/80 hover:text-white p-1 rounded hover:bg-white/10 transition-colors"
+                        title="Edit Video"
+                      >
+                        <Pencil size={13} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteVideo(v._id)}
+                        className="text-red-400 hover:text-red-300 p-1 rounded hover:bg-red-500/10 transition-colors"
+                        title="Delete Video"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -556,6 +632,23 @@ export default function AdminPage() {
                     >
                       <Send size={12} /> Send Email Blast
                     </button>
+                    <button
+                      onClick={() => {
+                        setEditingAnnouncement(a);
+                        setIsEditAnnouncementOpen(true);
+                      }}
+                      className="p-2 rounded-xl text-white/80 hover:text-white bg-white/5 hover:bg-white/15 transition-colors"
+                      title="Edit Announcement"
+                    >
+                      <Pencil size={15} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteAnnouncement(a._id)}
+                      className="p-2 rounded-xl text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 transition-colors"
+                      title="Delete Announcement"
+                    >
+                      <Trash2 size={15} />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -563,20 +656,20 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 6: PAYMENT & UPI SETTINGS */}
+        {/* TAB 6: UPI & PAYMENT SETTINGS */}
         {activeTab === "payment" && (
           <div className="max-w-2xl mx-auto space-y-6">
             <GlowCard className="p-7">
               <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
                 <div className="w-10 h-10 rounded-md bg-white/10 text-white flex items-center justify-center">
-                  <CreditCard size={20} />
+                  <QrCode size={20} />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>
-                    UPI Payment Gateway & Pricing Settings
+                    UPI Payment & QR Code Settings
                   </h3>
                   <p className="text-xs text-neutral-400">
-                    Configure your UPI ID, Payee Name, QR code, and tier prices.
+                    Provide your UPI ID and QR code to display when students click Go Basic or Go Premium.
                   </p>
                 </div>
               </div>
@@ -587,11 +680,98 @@ export default function AdminPage() {
                 </div>
               )}
 
-              <form onSubmit={handleSaveSettings} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <form onSubmit={handleSaveSettings} className="space-y-5">
+                {/* UPI ID Input */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-white flex items-center gap-1.5">
+                    <QrCode size={13} className="text-white" />
+                    My UPI ID
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. yourname@okhdfcbank or gotocodes@upi"
+                    value={settings.upiId}
+                    onChange={(e) => setSettings({ ...settings, upiId: e.target.value })}
+                    className="input-field text-sm font-mono"
+                  />
+                  <p className="text-[11px] text-neutral-400">
+                    This UPI ID will be shown with a 1-click copy button in the checkout modal.
+                  </p>
+                </div>
+
+                {/* QR Code Option */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-white flex items-center justify-between">
+                    <span>My UPI QR Code</span>
+                    {settings.upiQrUrl && <span className="text-white text-[11px]">✓ QR Code attached</span>}
+                  </label>
+
+                  {/* QR Preview & Upload Card */}
+                  <div className="p-5 rounded-2xl border border-white/15 bg-white/[0.02] flex flex-col items-center justify-center gap-4">
+                    {settings.upiQrUrl ? (
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="p-3 rounded-xl bg-white shadow-xl">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={settings.upiQrUrl}
+                            alt="Admin UPI QR Code"
+                            className="w-48 h-48 object-contain"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => qrFileInputRef.current?.click()}
+                            className="px-3 py-1.5 rounded-md border border-white/20 hover:border-white text-xs font-semibold text-white bg-white/10 hover:bg-white hover:text-black transition-all flex items-center gap-1.5"
+                          >
+                            <Upload size={13} /> Change QR Image
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSettings((prev) => ({ ...prev, upiQrUrl: "" }))}
+                            className="px-3 py-1.5 rounded-md border border-red-500/30 text-xs font-semibold text-red-400 hover:bg-red-500/10 transition-colors"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => qrFileInputRef.current?.click()}
+                        className="w-full py-8 border-2 border-dashed border-white/20 hover:border-white rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all bg-white/[0.02] hover:bg-white/[0.05]"
+                      >
+                        <QrCode size={36} className="text-white/60 mb-2" />
+                        <p className="text-xs font-bold text-white">Click to Upload Your UPI QR Code Image</p>
+                        <p className="text-[11px] text-neutral-400 mt-1">PNG, JPG, WebP up to 5MB</p>
+                      </div>
+                    )}
+
+                    <input
+                      ref={qrFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleQrUpload}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <input
+                      type="text"
+                      placeholder="Or paste QR code image URL directly..."
+                      value={settings.upiQrUrl}
+                      onChange={(e) => setSettings({ ...settings, upiQrUrl: e.target.value })}
+                      className="input-field text-xs py-2 font-mono"
+                    />
+                  </div>
+                </div>
+
+                {/* Plan Pricing */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold uppercase tracking-wider text-[var(--mist)]">
-                      Basic Tier Price (₹ INR)
+                      Basic Plan Price (₹ INR)
                     </label>
                     <input
                       type="number"
@@ -604,7 +784,7 @@ export default function AdminPage() {
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold uppercase tracking-wider text-[var(--mist)]">
-                      Premium Tier Price (₹ INR)
+                      Premium Plan Price (₹ INR)
                     </label>
                     <input
                       type="number"
@@ -616,51 +796,9 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-white flex items-center gap-1.5">
-                    <QrCode size={13} className="text-white" />
-                    UPI ID (e.g. username@okhdfcbank or gotocodes@upi)
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="yourname@upi"
-                    value={settings.upiId}
-                    onChange={(e) => setSettings({ ...settings, upiId: e.target.value })}
-                    className="input-field text-sm font-mono"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-white">
-                    UPI Business / Payee Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="GotoCodes Education"
-                    value={settings.upiName}
-                    onChange={(e) => setSettings({ ...settings, upiName: e.target.value })}
-                    className="input-field text-sm"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-white">
-                    Custom UPI QR Code Image URL (Optional)
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="https://... qr code image url (or auto-generated QR is used)"
-                    value={settings.upiQrUrl}
-                    onChange={(e) => setSettings({ ...settings, upiQrUrl: e.target.value })}
-                    className="input-field text-xs"
-                  />
-                </div>
-
                 <div className="pt-4 border-t border-white/10">
                   <Button3D type="submit" size="md" variant="primary" className="w-full">
-                    Save Payment & Site Settings
+                    Save UPI Settings
                   </Button3D>
                 </div>
               </form>
@@ -726,7 +864,7 @@ export default function AdminPage() {
 
       <Footer />
 
-      {/* Admin Modals */}
+      {/* Admin Modals - Add */}
       <ModuleAddModal
         open={isAddModuleOpen}
         onClose={() => setIsAddModuleOpen(false)}
@@ -760,6 +898,56 @@ export default function AdminPage() {
         open={isAnnouncementOpen}
         onClose={() => setIsAnnouncementOpen(false)}
         onAdded={(ann) => setAnnouncements((prev) => [ann, ...prev])}
+      />
+
+      {/* Admin Modals - Edit */}
+      <ModuleEditModal
+        open={isEditModuleOpen}
+        onClose={() => {
+          setIsEditModuleOpen(false);
+          setEditingModule(null);
+        }}
+        moduleData={editingModule}
+        onUpdated={(updated) =>
+          setModules((prev) => prev.map((m) => (m._id === updated._id ? updated : m)))
+        }
+      />
+
+      <ResourceEditModal
+        open={isEditResourceOpen}
+        onClose={() => {
+          setIsEditResourceOpen(false);
+          setEditingResource(null);
+        }}
+        resource={editingResource}
+        resourceTypes={resourceTypes}
+        onUpdated={(updated) =>
+          setResources((prev) => prev.map((r) => (r._id === updated._id ? updated : r)))
+        }
+      />
+
+      <ShortVideoEditModal
+        open={isEditVideoOpen}
+        onClose={() => {
+          setIsEditVideoOpen(false);
+          setEditingVideo(null);
+        }}
+        video={editingVideo}
+        onUpdated={(updated) =>
+          setShortVideos((prev) => prev.map((v) => (v._id === updated._id ? updated : v)))
+        }
+      />
+
+      <AnnouncementEditModal
+        open={isEditAnnouncementOpen}
+        onClose={() => {
+          setIsEditAnnouncementOpen(false);
+          setEditingAnnouncement(null);
+        }}
+        announcement={editingAnnouncement}
+        onUpdated={(updated) =>
+          setAnnouncements((prev) => prev.map((a) => (a._id === updated._id ? updated : a)))
+        }
       />
     </div>
   );

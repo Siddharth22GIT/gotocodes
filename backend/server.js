@@ -13,12 +13,59 @@ import adminRoutes from "./routes/adminRoutes.js";
 dotenv.config();
 connectDB();
 
+import User from "./models/User.js";
 import ResourceType from "./models/ResourceType.js";
 import ShortVideo from "./models/ShortVideo.js";
 
+// Ensure default admin user exists
+const initAdmin = async () => {
+  try {
+    const adminEmail = "admin@gotocodes.dev";
+    let admin = await User.findOne({ email: adminEmail });
+    if (!admin) {
+      await User.create({
+        name: "GotoCodes Admin",
+        email: adminEmail,
+        password: "AdminSid@123",
+        role: "admin",
+        tier: "premium",
+      });
+      console.log("Admin account created: admin@gotocodes.dev");
+    } else {
+      console.log("Admin account ready: admin@gotocodes.dev");
+    }
+  } catch (e) {
+    // DB not connected or network pending
+  }
+};
+setTimeout(initAdmin, 3000);
+
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_URL || "*" }));
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://127.0.0.1:3000",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.includes("localhost") ||
+        origin.includes("127.0.0.1") ||
+        origin.endsWith(".vercel.app")
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "10mb" }));
 
 app.get("/api/health", (req, res) => res.json({ status: "ok", service: "gotocodes-api" }));

@@ -1,10 +1,38 @@
 import mongoose from "mongoose";
 
+const readingMaterialSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true }, // e.g. "Capsule 1", "Capsule 2"
+    fileUrl: { type: String, required: true }, // PDF link or data URL
+    description: { type: String, default: "" },
+  },
+  { timestamps: true }
+);
+
+const moduleShortVideoSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String, default: "" },
+    bannerUrl: { type: String, default: "" },
+    instagramLink: { type: String, required: true },
+  },
+  { timestamps: true }
+);
+
+const handwrittenNoteSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    fileUrl: { type: String, required: true },
+    description: { type: String, default: "" },
+  },
+  { timestamps: true }
+);
+
 const lessonSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    filePath: { type: String, default: "notes.md" }, // shown in the terminal-card breadcrumb
-    content: { type: String, default: "" }, // markdown/plain notes or snippet
+    filePath: { type: String, default: "notes.md" },
+    content: { type: String, default: "" },
     videoUrl: { type: String, default: "" },
     tier: { type: String, enum: ["free", "basic", "premium"], default: "free" },
   },
@@ -17,8 +45,12 @@ const moduleSchema = new mongoose.Schema(
     slug: { type: String, required: true, unique: true },
     language: { type: String, required: true }, // e.g. "C++", "Python", "DSA", "MERN"
     description: { type: String, default: "" },
+    bannerUrl: { type: String, default: "" },
     icon: { type: String, default: "code" },
-    tier: { type: String, enum: ["free", "basic", "premium"], default: "free" }, // default access tier for the module itself
+    tier: { type: String, enum: ["free", "basic", "premium"], default: "free" },
+    readingMaterials: [readingMaterialSchema],
+    shortVideos: [moduleShortVideoSchema],
+    handwrittenNotes: [handwrittenNoteSchema],
     lessons: [lessonSchema],
     order: { type: Number, default: 0 },
   },

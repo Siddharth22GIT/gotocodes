@@ -215,7 +215,7 @@ export default function HeroSection() {
           className="text-sm sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-8 sm:mb-10 px-4"
           style={{ color: "var(--mist-dim)" }}
         >
-          Roadmaps, notes, and code snippets from a 5+ year CSE journey lived the hard way —
+          Roadmaps, notes, and knowledge from my own CSE journey lived the hard way —
           so yours doesn&apos;t have to be. No more DMs for resources. Everything lives here.
         </motion.p>
 
