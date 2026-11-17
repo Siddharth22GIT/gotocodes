@@ -112,7 +112,7 @@ export default function AdminQuickBar({
 
               <button
                 onClick={onOpenAddResource}
-                className="px-3 py-1.5 rounded text-xs font-semibold bg-neutral-900 hover:bg-white text-white hover:text-black border border-white/25 hover:border-white transition-all flex items-center gap-1.5 shadow-sm"
+                className="px-3 py-1.5 rounded text-xs font-semibold bg-neutral-900 hover:bg-white text-white hover:!text-black border border-white/25 hover:border-white transition-all flex items-center gap-1.5 shadow-sm"
               >
                 <Download size={12} />
                 Add Resource
@@ -129,7 +129,7 @@ export default function AdminQuickBar({
 
               <button
                 onClick={onOpenAddVideo}
-                className="px-3 py-1.5 rounded text-xs font-semibold bg-neutral-900 hover:bg-white text-white hover:text-black border border-white/25 hover:border-white transition-all flex items-center gap-1.5 shadow-sm"
+                className="px-3 py-1.5 rounded text-xs font-semibold bg-neutral-900 hover:bg-white text-white hover:!text-black border border-white/25 hover:border-white transition-all flex items-center gap-1.5 shadow-sm"
               >
                 <Film size={12} />
                 Short Video
@@ -137,7 +137,7 @@ export default function AdminQuickBar({
 
               <button
                 onClick={onOpenAnnouncement}
-                className="px-3 py-1.5 rounded text-xs font-semibold bg-neutral-900 hover:bg-white text-white hover:text-black border border-white/25 hover:border-white transition-all flex items-center gap-1.5 shadow-sm"
+                className="px-3 py-1.5 rounded text-xs font-semibold bg-neutral-900 hover:bg-white text-white hover:!text-black border border-white/25 hover:border-white transition-all flex items-center gap-1.5 shadow-sm"
               >
                 <Megaphone size={12} />
                 Announcement

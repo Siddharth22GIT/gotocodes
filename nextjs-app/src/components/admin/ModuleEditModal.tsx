@@ -480,7 +480,7 @@ export default function ModuleEditModal({
                             onChange={(e) => updateReadingMaterial(idx, "fileUrl", e.target.value)}
                             className="input-field text-xs font-mono flex-1"
                           />
-                          <label className="px-3 py-1.5 rounded-md border border-white/20 hover:border-white text-xs font-semibold cursor-pointer bg-white/10 hover:bg-white text-white hover:text-black transition-all flex items-center justify-center flex-shrink-0">
+                          <label className="px-3 py-1.5 rounded-md border border-white/20 hover:border-white text-xs font-semibold cursor-pointer bg-white/10 hover:bg-white text-white hover:!text-black transition-all flex items-center justify-center flex-shrink-0">
                             Upload
                             <input
                               type="file"
@@ -744,7 +744,7 @@ export default function ModuleEditModal({
                             onChange={(e) => updateHandwrittenNote(idx, "fileUrl", e.target.value)}
                             className="input-field text-xs font-mono flex-1"
                           />
-                          <label className="px-3 py-1.5 rounded-md border border-white/20 hover:border-white text-xs font-semibold cursor-pointer bg-white/10 hover:bg-white text-white hover:text-black transition-all flex items-center justify-center flex-shrink-0">
+                          <label className="px-3 py-1.5 rounded-md border border-white/20 hover:border-white text-xs font-semibold cursor-pointer bg-white/10 hover:bg-white text-white hover:!text-black transition-all flex items-center justify-center flex-shrink-0">
                             Upload
                             <input
                               type="file"

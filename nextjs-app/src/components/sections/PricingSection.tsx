@@ -104,7 +104,7 @@ function PaymentModal({ open, onClose, plan, settings }: PaymentModalProps) {
             </div>
             <button
               onClick={copyUpi}
-              className="px-2.5 py-1 rounded-md text-xs font-semibold transition-all border border-white/20 hover:border-white bg-white/10 hover:bg-white text-white hover:text-black flex items-center gap-1 flex-shrink-0"
+              className="px-2.5 py-1 rounded-md text-xs font-semibold transition-all border border-white/20 hover:border-white bg-white/10 hover:bg-white text-white hover:!text-black flex items-center gap-1 flex-shrink-0"
               title="Copy UPI ID"
             >
               {copied ? (

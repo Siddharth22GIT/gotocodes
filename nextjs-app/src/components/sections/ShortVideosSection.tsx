@@ -161,7 +161,7 @@ export default function ShortVideosSection({ videos, onOpenAddVideo }: ShortVide
                 style={{ height: "360px" }}
               >
                 <div
-                  className="w-10 h-10 rounded-md flex items-center justify-center mb-2 bg-white/10 text-white group-hover:bg-white group-hover:text-black transition-all"
+                  className="w-10 h-10 rounded-md flex items-center justify-center mb-2 bg-white/10 text-white group-hover:bg-white group-hover:!text-black transition-all"
                 >
                   <Plus size={20} />
                 </div>

@@ -338,9 +338,10 @@ export default function ModuleDetailPage() {
                             href={sv.instagramLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-1.5 rounded-md text-xs font-semibold bg-white/10 hover:bg-white text-white hover:text-black border border-white/20 transition-all flex items-center justify-center gap-1.5"
+                            className="w-full py-1.5 rounded-md text-xs font-semibold bg-white/10 hover:bg-white text-white hover:!text-black border border-white/20 hover:border-white transition-all flex items-center justify-center gap-1.5 group/watch"
                           >
-                            <Play size={12} fill="currentColor" /> Watch Reel
+                            <Play size={12} fill="currentColor" className="transition-colors group-hover/watch:!fill-black group-hover/watch:!stroke-black group-hover/watch:!text-black" />
+                            <span className="transition-colors group-hover/watch:!text-black">Watch Reel</span>
                           </a>
                         </div>
                       </div>
