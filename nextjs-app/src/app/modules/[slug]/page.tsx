@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   BookOpen,
@@ -23,11 +23,15 @@ import Footer from "@/components/layout/Footer";
 import Button3D from "@/components/ui/Button3D";
 import GlowCard from "@/components/ui/GlowCard";
 import ShootingStars from "@/components/ui/ShootingStars";
+import AuthGateModal from "@/components/ui/AuthGateModal";
 import api from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ModuleDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const slug = params?.slug as string;
+  const { user, loading: authLoading } = useAuth();
 
   const [moduleData, setModuleData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -82,10 +86,19 @@ export default function ModuleDetailPage() {
   const hasNotes = moduleData?.handwrittenNotes && moduleData.handwrittenNotes.length > 0;
   const hasLessons = moduleData?.lessons && moduleData.lessons.length > 0;
 
+  // If auth is resolved and user is not logged in, show the gate modal on top of page
+  const isGated = !authLoading && !user;
+
   return (
     <div className="min-h-screen bg-[var(--ink-900)] text-[var(--mist)] relative">
       <ShootingStars />
       <Navbar />
+
+      {/* Auth gate: shown when user is not logged in */}
+      <AuthGateModal
+        open={isGated}
+        onClose={() => router.push("/")}
+      />
 
       <main className="max-w-7xl mx-auto px-5 md:px-8 py-10 pt-28 relative z-10">
         {/* Breadcrumb Navigation */}

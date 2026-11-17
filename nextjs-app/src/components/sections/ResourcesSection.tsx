@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import { FileText, BookOpen, PenTool, Download, Plus, ExternalLink } from "lucide-react";
+import { FileText, BookOpen, PenTool, Download, Plus } from "lucide-react";
 import GlowCard from "@/components/ui/GlowCard";
+import AuthGateModal from "@/components/ui/AuthGateModal";
+import { useAuth } from "@/context/AuthContext";
 
 interface Resource {
   _id: string;
@@ -53,10 +54,20 @@ export default function ResourcesSection({
   onOpenAddResource,
   onOpenAddType,
 }: ResourcesSectionProps) {
+  const { user } = useAuth();
+  const [gateOpen, setGateOpen] = useState(false);
   const types = resourceTypes.length > 0 ? resourceTypes : DEFAULT_TYPES;
   const [activeType, setActiveType] = useState("all");
 
   const filtered = activeType === "all" ? resources : resources.filter((r) => r.resourceType === activeType);
+
+  function handleDownload(fileUrl: string) {
+    if (!user) {
+      setGateOpen(true);
+    } else {
+      window.open(fileUrl, "_blank", "noopener,noreferrer");
+    }
+  }
 
   return (
     <section id="resources" className="py-16 sm:py-24 px-4 sm:px-6 md:px-8 relative overflow-hidden">
@@ -192,10 +203,12 @@ export default function ResourcesSection({
                         {resource.category}
                       </span>
                       {resource.fileUrl && (
-                        <a href={resource.fileUrl} target="_blank" rel="noopener noreferrer"
-                          className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white transition-colors flex-shrink-0">
+                        <button
+                          onClick={() => handleDownload(resource.fileUrl)}
+                          className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white transition-colors flex-shrink-0"
+                        >
                           <Download size={12} /> Download
-                        </a>
+                        </button>
                       )}
                     </div>
                   </div>
@@ -212,6 +225,8 @@ export default function ResourcesSection({
           </motion.div>
         </AnimatePresence>
       </div>
+
+      <AuthGateModal open={gateOpen} onClose={() => setGateOpen(false)} />
     </section>
   );
 }

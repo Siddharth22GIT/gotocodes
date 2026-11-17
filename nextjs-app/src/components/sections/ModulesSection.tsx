@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
-import { BookOpen, ArrowRight, Star, Plus } from "lucide-react";
+import { BookOpen, ArrowRight, Plus } from "lucide-react";
 import GlowCard from "@/components/ui/GlowCard";
+import AuthGateModal from "@/components/ui/AuthGateModal";
+import { useAuth } from "@/context/AuthContext";
 
 interface Module {
   _id: string;
@@ -39,6 +41,9 @@ interface ModulesSectionProps {
 }
 
 export default function ModulesSection({ modules, onOpenAdd }: ModulesSectionProps) {
+  const { user } = useAuth();
+  const [gateOpen, setGateOpen] = useState(false);
+
   return (
     <section id="modules" className="py-16 sm:py-24 px-4 sm:px-6 md:px-8 relative overflow-hidden">
       {/* Glow */}
@@ -89,7 +94,15 @@ export default function ModulesSection({ modules, onOpenAdd }: ModulesSectionPro
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
             >
-              <Link href={`/modules/${mod.slug}`}>
+              <Link
+                href={`/modules/${mod.slug}`}
+                onClick={(e) => {
+                  if (!user) {
+                    e.preventDefault();
+                    setGateOpen(true);
+                  }
+                }}
+              >
                 <GlowCard noPadding className="group overflow-hidden">
                   {/* Banner */}
                   <div className="relative h-44 overflow-hidden">
@@ -146,6 +159,8 @@ export default function ModulesSection({ modules, onOpenAdd }: ModulesSectionPro
           )}
         </div>
       </div>
+
+      <AuthGateModal open={gateOpen} onClose={() => setGateOpen(false)} />
     </section>
   );
 }

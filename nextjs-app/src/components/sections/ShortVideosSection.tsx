@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { Play, Plus } from "lucide-react";
 import { Instagram } from "@/components/ui/Icons";
+import AuthGateModal from "@/components/ui/AuthGateModal";
+import { useAuth } from "@/context/AuthContext";
 
 interface ShortVideo {
   _id: string;
@@ -20,7 +22,18 @@ interface ShortVideosSectionProps {
 }
 
 export default function ShortVideosSection({ videos, onOpenAddVideo }: ShortVideosSectionProps) {
+  const { user } = useAuth();
+  const [gateOpen, setGateOpen] = useState(false);
+
   if (videos.length === 0 && !onOpenAddVideo) return null;
+
+  function handleVideoClick(e: React.MouseEvent, instagramLink: string) {
+    if (!user) {
+      e.preventDefault();
+      setGateOpen(true);
+    }
+    // if user is logged in, the href on the <a> tag handles navigation
+  }
 
   return (
     <section id="videos" className="py-16 sm:py-24 px-4 sm:px-6 md:px-8 relative overflow-hidden">
@@ -73,10 +86,11 @@ export default function ShortVideosSection({ videos, onOpenAddVideo }: ShortVide
               transition={{ delay: i * 0.07, duration: 0.5 }}
             >
               <a
-                href={video.instagramLink || "#"}
-                target="_blank"
+                href={user ? (video.instagramLink || "#") : "#"}
+                target={user ? "_blank" : "_self"}
                 rel="noopener noreferrer"
                 className="block"
+                onClick={(e) => handleVideoClick(e, video.instagramLink)}
               >
                 {/* Card: fixed height so they don't stretch the page */}
                 <div
@@ -159,6 +173,8 @@ export default function ShortVideosSection({ videos, onOpenAddVideo }: ShortVide
           )}
         </div>
       </div>
+
+      <AuthGateModal open={gateOpen} onClose={() => setGateOpen(false)} />
     </section>
   );
 }
