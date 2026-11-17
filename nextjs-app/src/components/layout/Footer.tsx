@@ -10,12 +10,10 @@ export default function Footer() {
       { label: "Modules", href: "/#modules" },
       { label: "Resources", href: "/#resources" },
       { label: "Short Videos", href: "/#videos" },
-      { label: "Pricing", href: "/#pricing" },
     ],
     Account: [
       { label: "Log in", href: "/login" },
       { label: "Register", href: "/register" },
-      { label: "Dashboard", href: "/dashboard" },
     ],
   };
 

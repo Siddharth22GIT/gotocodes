@@ -37,8 +37,12 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      await register(name, email, password);
-      router.push("/dashboard");
+      const newUser = await register(name, email, password);
+      if (newUser?.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
     } catch (err: any) {
       setError(err?.response?.data?.message || "Registration failed. Try again.");
     } finally {
@@ -147,7 +151,7 @@ export default function RegisterPage() {
 
             <div className="pt-2">
               <Button3D type="submit" disabled={loading} size="lg" variant="primary" className="w-full">
-                {loading ? "Generating Developer Profile..." : "Claim Free Account"}
+                {loading ? "Generating Developer Profile..." : "Create Account"}
                 <ArrowRight size={16} className="ml-1" />
               </Button3D>
             </div>

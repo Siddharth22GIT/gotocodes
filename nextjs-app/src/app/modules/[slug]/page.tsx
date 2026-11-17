@@ -7,7 +7,6 @@ import {
   BookOpen,
   ArrowLeft,
   CheckCircle2,
-  Lock,
   Play,
   FileCode,
   Copy,
@@ -130,7 +129,6 @@ export default function ModuleDetailPage() {
                 <div className="md:col-span-8 space-y-3">
                   <div className="flex items-center gap-2">
                     <span className="badge badge-violet text-xs font-semibold">{moduleData.language}</span>
-                    <span className="badge badge-violet text-xs uppercase font-bold">{moduleData.tier}</span>
                   </div>
                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight" style={{ fontFamily: "Space Grotesk" }}>
                     {moduleData.title}

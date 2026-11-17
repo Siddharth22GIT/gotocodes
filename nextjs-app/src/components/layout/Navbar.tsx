@@ -12,7 +12,6 @@ const NAV_LINKS = [
   { label: "Modules", href: "/#modules" },
   { label: "Resources", href: "/#resources" },
   { label: "Videos", href: "/#videos" },
-  { label: "Pricing", href: "/#pricing" },
   { label: "About", href: "/#about" },
 ];
 
@@ -33,12 +32,6 @@ export default function Navbar() {
     logout();
     router.push("/");
     setOpen(false);
-  };
-
-  const tierColor = {
-    free: "text-neutral-400",
-    basic: "text-neutral-300",
-    premium: "text-white font-semibold",
   };
 
   return (
@@ -77,7 +70,7 @@ export default function Navbar() {
           {user ? (
             <>
               <Link
-                href={user.role === "admin" ? "/admin" : "/dashboard"}
+                href={user.role === "admin" ? "/admin" : "/"}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-sm"
               >
                 <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-black"
@@ -86,7 +79,6 @@ export default function Navbar() {
                 </div>
                 <span className="text-[var(--mist-dim)]" style={{ fontFamily: "JetBrains Mono", fontSize: "12px" }}>
                   {user.name.split(" ")[0]}
-                  <span className={`ml-1.5 ${tierColor[user.tier]}`}>· {user.tier}</span>
                 </span>
               </Link>
               <Button3D size="sm" variant="ghost" onClick={handleLogout}>
@@ -104,7 +96,7 @@ export default function Navbar() {
               <Link href="/register">
                 <Button3D size="sm">
                   <Zap size={14} />
-                  Join free
+                  Join now
                 </Button3D>
               </Link>
             </>
@@ -150,8 +142,8 @@ export default function Navbar() {
               <div className="flex gap-3 pt-3 border-t border-white/5 mt-2">
                 {user ? (
                   <>
-                    <Link href={user.role === "admin" ? "/admin" : "/dashboard"} onClick={() => setOpen(false)}>
-                      <Button3D size="sm" variant="ghost">Dashboard</Button3D>
+                    <Link href={user.role === "admin" ? "/admin" : "/"} onClick={() => setOpen(false)}>
+                      <Button3D size="sm" variant="ghost">{user.role === "admin" ? "Admin Studio" : "Home"}</Button3D>
                     </Link>
                     <Button3D size="sm" variant="ghost" onClick={handleLogout}>Log out</Button3D>
                   </>
@@ -161,7 +153,7 @@ export default function Navbar() {
                       <Button3D size="sm" variant="ghost">Log in</Button3D>
                     </Link>
                     <Link href="/register" onClick={() => setOpen(false)}>
-                      <Button3D size="sm">Join free</Button3D>
+                      <Button3D size="sm">Join now</Button3D>
                     </Link>
                   </>
                 )}

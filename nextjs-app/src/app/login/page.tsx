@@ -23,8 +23,12 @@ export default function LoginPage() {
     setError("");
 
     try {
-      await login(email, password);
-      router.push("/dashboard");
+      const loggedUser = await login(email, password);
+      if (loggedUser?.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
     } catch (err: any) {
       if (!err?.response) {
         setError("Cannot connect to backend API server at http://localhost:5000. Please make sure the backend is running (in a terminal: cd backend && npm start).");
@@ -108,7 +112,7 @@ export default function LoginPage() {
 
             <div className="pt-2">
               <Button3D type="submit" disabled={loading} size="lg" className="w-full">
-                {loading ? "Decrypting access..." : "Launch Dashboard"}
+                {loading ? "Logging in..." : "Log In"}
                 <ArrowRight size={16} className="ml-1" />
               </Button3D>
             </div>
@@ -117,7 +121,7 @@ export default function LoginPage() {
           <p className="text-center text-xs text-neutral-400 mt-6">
             New to GotoCodes?{" "}
             <Link href="/register" className="font-bold text-white hover:underline">
-              Create free account
+              Create an account
             </Link>
           </p>
         </GlowCard>

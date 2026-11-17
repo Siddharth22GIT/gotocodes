@@ -236,8 +236,8 @@ export default function ResourceEditModal({
           />
         </div>
 
-        {/* Resource Type, Category & Tier */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* Resource Type & Category */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-xs font-semibold uppercase tracking-wider text-white">Resource Type</label>
             <select
@@ -262,19 +262,6 @@ export default function ResourceEditModal({
               className="input-field text-xs"
               placeholder="e.g. DSA, Resume, System Design"
             />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-white">Access Tier</label>
-            <select
-              value={tier}
-              onChange={(e) => setTier(e.target.value as any)}
-              className="input-field text-xs bg-neutral-900 text-white cursor-pointer"
-            >
-              <option value="free">Free (All students)</option>
-              <option value="basic">Basic Tier</option>
-              <option value="premium">Premium Tier</option>
-            </select>
           </div>
         </div>
 

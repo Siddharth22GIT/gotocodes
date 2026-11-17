@@ -392,38 +392,23 @@ export default function ModuleAddModal({ open, onClose, onAdded }: ModuleAddModa
               />
             </div>
 
-            {/* Category / Language & Tier */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-white">Category / Language</label>
-                <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="input-field text-xs bg-neutral-900 text-white cursor-pointer"
-                >
-                  <option value="DSA">DSA (Data Structures & Algos)</option>
-                  <option value="C++">C++ Mastery</option>
-                  <option value="Python">Python</option>
-                  <option value="JavaScript">JavaScript & Node.js</option>
-                  <option value="MERN">Fullstack MERN</option>
-                  <option value="System Design">System Design</option>
-                  <option value="Core CSE">Core CSE (OS, DBMS, CN)</option>
-                  <option value="Interview">Interview Prep</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-white">Access Tier</label>
-                <select
-                  value={tier}
-                  onChange={(e) => setTier(e.target.value as any)}
-                  className="input-field text-xs bg-neutral-900 text-white cursor-pointer"
-                >
-                  <option value="free">Free (All Students)</option>
-                  <option value="basic">Basic Tier</option>
-                  <option value="premium">Premium Tier</option>
-                </select>
-              </div>
+            {/* Category / Language */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-white">Category / Language</label>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="input-field text-xs bg-neutral-900 text-white cursor-pointer"
+              >
+                <option value="DSA">DSA (Data Structures & Algos)</option>
+                <option value="C++">C++ Mastery</option>
+                <option value="Python">Python</option>
+                <option value="JavaScript">JavaScript & Node.js</option>
+                <option value="MERN">Fullstack MERN</option>
+                <option value="System Design">System Design</option>
+                <option value="Core CSE">Core CSE (OS, DBMS, CN)</option>
+                <option value="Interview">Interview Prep</option>
+              </select>
             </div>
           </div>
         )}

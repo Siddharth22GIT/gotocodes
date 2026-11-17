@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { FileText, BookOpen, PenTool, Download, Lock, Plus, ExternalLink } from "lucide-react";
+import { FileText, BookOpen, PenTool, Download, Plus, ExternalLink } from "lucide-react";
 import GlowCard from "@/components/ui/GlowCard";
 
 interface Resource {
@@ -15,9 +15,9 @@ interface Resource {
   category: string;
   resourceType: string;
   fileUrl: string;
-  tier: "free" | "basic" | "premium";
-  price: number;
-  isSellable: boolean;
+  tier?: string;
+  price?: number;
+  isSellable?: boolean;
 }
 
 interface ResourceType {
@@ -166,16 +166,10 @@ export default function ResourcesSection({
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink-700)] to-transparent" />
-                    <div className="absolute top-3 left-3 max-w-[65%]">
+                    <div className="absolute top-3 left-3 max-w-[85%]">
                       <span className="badge badge-violet text-[10px] truncate max-w-full">
                         <TypeIcon icon={types.find(t => t.slug === resource.resourceType)?.icon || "file-text"} color="#FFFFFF" size={9} />
                         <span className="truncate">{types.find(t => t.slug === resource.resourceType)?.name || resource.resourceType}</span>
-                      </span>
-                    </div>
-                    <div className="absolute top-3 right-3 flex-shrink-0">
-                      <span className="badge badge-violet text-[10px]">
-                        {resource.tier !== "free" && <Lock size={9} />}
-                        {resource.isSellable ? `₹${resource.price}` : resource.tier}
                       </span>
                     </div>
                   </div>
@@ -189,7 +183,7 @@ export default function ResourcesSection({
                         </h3>
                       </div>
                       <p className="text-sm mb-4 line-clamp-2 min-w-0" style={{ color: "var(--mist-dim)" }}>
-                        {resource.description || "A premium resource to boost your learning."}
+                        {resource.description || "Handpicked resource to boost your learning."}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 pt-2 border-t border-white/5 mt-auto">
@@ -197,17 +191,11 @@ export default function ResourcesSection({
                         style={{ fontFamily: "JetBrains Mono", background: "rgba(255,255,255,0.06)", color: "var(--mist-dim)" }}>
                         {resource.category}
                       </span>
-                      {resource.fileUrl && resource.tier === "free" && (
+                      {resource.fileUrl && (
                         <a href={resource.fileUrl} target="_blank" rel="noopener noreferrer"
                           className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white transition-colors flex-shrink-0">
                           <Download size={12} /> Download
                         </a>
-                      )}
-                      {resource.tier !== "free" && (
-                        <span className="ml-auto flex items-center gap-1.5 text-xs font-semibold flex-shrink-0"
-                          style={{ color: "var(--mist-faint)" }}>
-                          <Lock size={11} /> {resource.tier}
-                        </span>
                       )}
                     </div>
                   </div>

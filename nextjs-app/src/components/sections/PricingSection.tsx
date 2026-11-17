@@ -52,78 +52,84 @@ function PaymentModal({ open, onClose, plan, settings }: PaymentModalProps) {
 
   return (
     <Modal open={open} onClose={onClose} title={`Upgrade to ${plan?.name}`} size="md">
-      <div className="space-y-6">
+      <div className="space-y-2.5">
         {/* Plan Summary */}
-        <div className="p-4 rounded-xl border border-white/10 bg-white/[0.04]">
+        <div className="px-3.5 py-2.5 rounded-xl border border-white/10 bg-white/[0.04]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-bold text-lg text-white" style={{ fontFamily: "Space Grotesk" }}>
+              <p className="font-bold text-sm sm:text-base text-white" style={{ fontFamily: "Space Grotesk" }}>
                 {plan?.name} Plan
               </p>
-              <p className="text-sm mt-0.5" style={{ color: "var(--mist-dim)" }}>Monthly subscription</p>
+              <p className="text-[11px] text-neutral-400">Monthly subscription</p>
             </div>
-            <p className="text-3xl font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>
+            <p className="text-xl sm:text-2xl font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>
               ₹{plan?.price}
-              <span className="text-sm font-normal ml-1" style={{ color: "var(--mist-dim)" }}>/mo</span>
+              <span className="text-xs font-normal ml-1 text-neutral-400">/mo</span>
             </p>
           </div>
         </div>
 
         {/* Payment Options */}
         <div>
-          <p className="text-sm font-semibold mb-3 text-center text-white/90" style={{ fontFamily: "Space Grotesk" }}>
+          <p className="text-[11px] font-semibold mb-1.5 text-center text-white/90 uppercase tracking-wider" style={{ fontFamily: "Space Grotesk" }}>
             Scan to Pay ₹{plan?.price}
           </p>
 
-          <div className="flex flex-col items-center justify-center mb-4">
-            <div className="p-4 rounded-2xl bg-white shadow-2xl border-2 border-white/20 flex flex-col items-center">
+          <div className="flex flex-col items-center justify-center mb-2">
+            <div className="p-2 rounded-xl bg-white shadow-xl border border-white/20 flex flex-col items-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={
                   settings?.upiQrUrl ||
                   `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(
                     upiDeepLink !== "#" ? upiDeepLink : `upi://pay?pa=gotocodes@upi&am=${plan?.price}&cu=INR`
-                  )}&size=260x260`
+                  )}&size=200x200`
                 }
                 alt="Scan to Pay QR Code"
-                className="w-52 h-52 object-contain"
+                className="w-32 h-32 sm:w-36 sm:h-36 object-contain"
               />
-              <span className="text-[11px] font-bold text-neutral-800 tracking-wider uppercase mt-2 font-mono">
+              <span className="text-[9px] font-bold text-neutral-800 tracking-wider uppercase mt-1 font-mono">
                 Scan with any UPI App
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3.5 rounded-xl border border-white/10 bg-white/[0.03]">
-            <QrCode size={18} className="text-white flex-shrink-0" />
+          <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03]">
+            <QrCode size={16} className="text-white flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-xs mb-0.5 text-white/50" style={{ fontFamily: "JetBrains Mono" }}>UPI ID</p>
-              <p className="text-sm font-semibold text-white truncate font-mono">
+              <p className="text-[10px] mb-0.5 text-white/50" style={{ fontFamily: "JetBrains Mono" }}>UPI ID</p>
+              <p className="text-xs font-semibold text-white truncate font-mono">
                 {settings?.upiId || "gotocodes@upi"}
               </p>
             </div>
             <button
               onClick={copyUpi}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border border-white/20 hover:border-white bg-white/10 hover:bg-white text-white hover:text-black flex items-center gap-1.5 flex-shrink-0"
+              className="px-2.5 py-1 rounded-md text-xs font-semibold transition-all border border-white/20 hover:border-white bg-white/10 hover:bg-white text-white hover:text-black flex items-center gap-1 flex-shrink-0"
               title="Copy UPI ID"
             >
               {copied ? (
                 <>
-                  <Check size={14} /> Copied!
+                  <Check size={13} /> Copied!
                 </>
               ) : (
                 <>
-                  <Copy size={14} /> Copy ID
+                  <Copy size={13} /> Copy ID
                 </>
               )}
             </button>
           </div>
-
         </div>
 
-        <div className="p-4 rounded-xl border border-white/15 bg-white/[0.04]">
-          <p className="text-sm text-white/80">
-            ⚡ After payment, DM your screenshot to get your account upgraded within 24 hours.
+        <div className="px-3 py-2 rounded-xl border border-white/15 bg-white/[0.04]">
+          <p className="text-xs text-white/90 text-center leading-relaxed">
+            ⚡ After payment, mail your payment screenshot to{" "}
+            <a
+              href="mailto:sidweb25@gmail.com"
+              className="font-semibold text-white underline underline-offset-2 hover:text-neutral-200"
+            >
+              sidweb25@gmail.com
+            </a>{" "}
+            to get your account upgraded within 24 hours.
           </p>
         </div>
       </div>

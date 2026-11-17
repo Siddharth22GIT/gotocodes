@@ -467,29 +467,6 @@ export default function ResourceAddModal({
               </div>
             </div>
 
-            {/* Tier */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold tracking-wider uppercase text-[var(--mist)]">
-                Access Tier
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {(["free", "basic", "premium"] as const).map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setTier(t)}
-                    className={`py-2 px-2 rounded-md text-xs font-bold uppercase transition-all border ${
-                      tier === t
-                        ? "border-white bg-white text-black"
-                        : "border-white/15 bg-white/5 text-neutral-400 hover:text-white hover:border-white/30"
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <div className="flex items-center justify-between pt-4 border-t border-white/10">
               <button
                 type="button"

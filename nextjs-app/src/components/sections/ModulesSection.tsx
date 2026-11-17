@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { BookOpen, ArrowRight, Lock, Star, Plus } from "lucide-react";
+import { BookOpen, ArrowRight, Star, Plus } from "lucide-react";
 import GlowCard from "@/components/ui/GlowCard";
 
 interface Module {
@@ -13,18 +13,12 @@ interface Module {
   language: string;
   description: string;
   bannerUrl?: string;
-  tier: "free" | "basic" | "premium";
+  tier?: string;
   lessons?: { _id?: string }[];
   lessonCount?: number;
   unlockedCount?: number;
   order?: number;
 }
-
-const tierColors = {
-  free: { badge: "badge-free", text: "Free" },
-  basic: { badge: "badge-basic", text: "Basic" },
-  premium: { badge: "badge-premium", text: "Premium" },
-};
 
 const langGradients: Record<string, string> = {
   "c++": "from-[#333333] to-[#AAAAAA]",
@@ -113,14 +107,6 @@ export default function ModulesSection({ modules, onOpenAdd }: ModulesSectionPro
                     )}
                     {/* Overlay gradient */}
                     <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink-700)] to-transparent" />
-
-                    {/* Tier badge */}
-                    <div className="absolute top-3 right-3">
-                      <span className={`badge ${tierColors[mod.tier].badge}`}>
-                        {mod.tier !== "free" && <Lock size={9} />}
-                        {tierColors[mod.tier].text}
-                      </span>
-                    </div>
 
                     {/* Language tag */}
                     <div className="absolute bottom-3 left-3">

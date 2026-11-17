@@ -223,20 +223,6 @@ export default function ShortVideoEditModal({
           />
         </div>
 
-        {/* Tier */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold uppercase tracking-wider text-white">Access Tier</label>
-          <select
-            value={tier}
-            onChange={(e) => setTier(e.target.value)}
-            className="input-field text-xs bg-neutral-900 text-white cursor-pointer"
-          >
-            <option value="free">Free (Visible to Everyone)</option>
-            <option value="basic">Basic Tier</option>
-            <option value="premium">Premium Tier</option>
-          </select>
-        </div>
-
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
           <button
             type="button"

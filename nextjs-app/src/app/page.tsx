@@ -9,7 +9,6 @@ import HeroSection from "@/components/sections/HeroSection";
 import ModulesSection from "@/components/sections/ModulesSection";
 import ResourcesSection from "@/components/sections/ResourcesSection";
 import ShortVideosSection from "@/components/sections/ShortVideosSection";
-import PricingSection from "@/components/sections/PricingSection";
 import AboutSection from "@/components/sections/AboutSection";
 
 import ModuleAddModal from "@/components/admin/ModuleAddModal";
@@ -49,9 +48,9 @@ const INITIAL_RESOURCES = [
     resourceType: "ebook",
     bannerUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=80",
     fileUrl: "#",
-    tier: "basic" as const,
-    price: 199,
-    isSellable: true,
+    tier: "free" as const,
+    price: 0,
+    isSellable: false,
   },
   {
     _id: "res-3",
@@ -220,8 +219,6 @@ export default function Home() {
           videos={shortVideos}
           onOpenAddVideo={isAdmin ? () => setIsAddVideoOpen(true) : undefined}
         />
-
-        <PricingSection settings={settings} />
 
         <AboutSection settings={settings} />
       </main>

@@ -9,7 +9,6 @@ import {
   Download,
   Film,
   Megaphone,
-  CreditCard,
   Users,
   Plus,
   Trash2,
@@ -45,7 +44,7 @@ import api from "@/lib/api";
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<
-    "overview" | "modules" | "resources" | "videos" | "announcements" | "payment" | "users"
+    "overview" | "modules" | "resources" | "videos" | "announcements" | "users"
   >("overview");
 
   // State data
@@ -228,7 +227,7 @@ export default function AdminPage() {
               GotoCodes Studio & Management
             </h1>
             <p className="text-sm text-neutral-400 mt-1">
-              Add, edit, and manage modules, resources, short videos, announcements, and UPI payments.
+              Add, edit, and manage modules, resources, short videos, and announcements.
             </p>
           </div>
 
@@ -247,7 +246,6 @@ export default function AdminPage() {
             { id: "resources", label: `Resources (${resources.length})`, icon: Download },
             { id: "videos", label: `Short Videos (${shortVideos.length})`, icon: Film },
             { id: "announcements", label: `Announcements (${announcements.length})`, icon: Megaphone },
-            { id: "payment", label: "UPI Settings", icon: CreditCard },
             { id: "users", label: `Users (${usersList.length})`, icon: Users },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -367,7 +365,6 @@ export default function AdminPage() {
                         <h4 className="font-bold text-white text-base">{m.title}</h4>
                         <div className="flex flex-wrap items-center gap-2 mt-1.5">
                           <span className="badge badge-violet text-[10px]">{m.language || "Tech"}</span>
-                          <span className="badge badge-violet text-[10px] uppercase font-bold">{m.tier}</span>
                           <span className="text-[11px] text-neutral-400 font-mono">
                             📄 {m.readingMaterials?.length || 0} PDFs
                           </span>
@@ -484,7 +481,6 @@ export default function AdminPage() {
                         <div className="flex items-center gap-2 mt-1">
                           <span className="badge badge-violet text-[10px] uppercase font-bold">{r.resourceType}</span>
                           <span className="text-[11px] text-neutral-400">{r.category}</span>
-                          <span className="badge badge-violet text-[10px] uppercase">{r.tier}</span>
                         </div>
                       </div>
                     </div>
@@ -656,165 +652,15 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 6: UPI & PAYMENT SETTINGS */}
-        {activeTab === "payment" && (
-          <div className="max-w-2xl mx-auto space-y-6">
-            <GlowCard className="p-7">
-              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                <div className="w-10 h-10 rounded-md bg-white/10 text-white flex items-center justify-center">
-                  <QrCode size={20} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>
-                    UPI Payment & QR Code Settings
-                  </h3>
-                  <p className="text-xs text-neutral-400">
-                    Provide your UPI ID and QR code to display when students click Go Basic or Go Premium.
-                  </p>
-                </div>
-              </div>
-
-              {settingsSaved && (
-                <div className="mb-5 p-3.5 rounded-lg bg-white/10 border border-white/20 text-white text-xs flex items-center gap-2">
-                  <CheckCircle2 size={15} /> Settings successfully saved and applied live!
-                </div>
-              )}
-
-              <form onSubmit={handleSaveSettings} className="space-y-5">
-                {/* UPI ID Input */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-white flex items-center gap-1.5">
-                    <QrCode size={13} className="text-white" />
-                    My UPI ID
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. yourname@okhdfcbank or gotocodes@upi"
-                    value={settings.upiId}
-                    onChange={(e) => setSettings({ ...settings, upiId: e.target.value })}
-                    className="input-field text-sm font-mono"
-                  />
-                  <p className="text-[11px] text-neutral-400">
-                    This UPI ID will be shown with a 1-click copy button in the checkout modal.
-                  </p>
-                </div>
-
-                {/* QR Code Option */}
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-white flex items-center justify-between">
-                    <span>My UPI QR Code</span>
-                    {settings.upiQrUrl && <span className="text-white text-[11px]">✓ QR Code attached</span>}
-                  </label>
-
-                  {/* QR Preview & Upload Card */}
-                  <div className="p-5 rounded-2xl border border-white/15 bg-white/[0.02] flex flex-col items-center justify-center gap-4">
-                    {settings.upiQrUrl ? (
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="p-3 rounded-xl bg-white shadow-xl">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={settings.upiQrUrl}
-                            alt="Admin UPI QR Code"
-                            className="w-48 h-48 object-contain"
-                          />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => qrFileInputRef.current?.click()}
-                            className="px-3 py-1.5 rounded-md border border-white/20 hover:border-white text-xs font-semibold text-white bg-white/10 hover:bg-white hover:text-black transition-all flex items-center gap-1.5"
-                          >
-                            <Upload size={13} /> Change QR Image
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setSettings((prev) => ({ ...prev, upiQrUrl: "" }))}
-                            className="px-3 py-1.5 rounded-md border border-red-500/30 text-xs font-semibold text-red-400 hover:bg-red-500/10 transition-colors"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div
-                        onClick={() => qrFileInputRef.current?.click()}
-                        className="w-full py-8 border-2 border-dashed border-white/20 hover:border-white rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all bg-white/[0.02] hover:bg-white/[0.05]"
-                      >
-                        <QrCode size={36} className="text-white/60 mb-2" />
-                        <p className="text-xs font-bold text-white">Click to Upload Your UPI QR Code Image</p>
-                        <p className="text-[11px] text-neutral-400 mt-1">PNG, JPG, WebP up to 5MB</p>
-                      </div>
-                    )}
-
-                    <input
-                      ref={qrFileInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleQrUpload}
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <input
-                      type="text"
-                      placeholder="Or paste QR code image URL directly..."
-                      value={settings.upiQrUrl}
-                      onChange={(e) => setSettings({ ...settings, upiQrUrl: e.target.value })}
-                      className="input-field text-xs py-2 font-mono"
-                    />
-                  </div>
-                </div>
-
-                {/* Plan Pricing */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-[var(--mist)]">
-                      Basic Plan Price (₹ INR)
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      value={settings.basicPriceINR}
-                      onChange={(e) => setSettings({ ...settings, basicPriceINR: Number(e.target.value) })}
-                      className="input-field text-sm"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-[var(--mist)]">
-                      Premium Plan Price (₹ INR)
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      value={settings.premiumPriceINR}
-                      onChange={(e) => setSettings({ ...settings, premiumPriceINR: Number(e.target.value) })}
-                      className="input-field text-sm"
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-white/10">
-                  <Button3D type="submit" size="md" variant="primary" className="w-full">
-                    Save UPI Settings
-                  </Button3D>
-                </div>
-              </form>
-            </GlowCard>
-          </div>
-        )}
-
-        {/* TAB 7: USERS & TIERS */}
+        {/* TAB 6: USERS */}
         {activeTab === "users" && (
           <div className="space-y-6">
             <div>
               <h3 className="text-xl font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>
-                Registered Students & User Tiers
+                Registered Users
               </h3>
               <p className="text-xs text-[var(--mist-dim)]">
-                Manually grant or upgrade user tiers (free, basic, premium).
+                List of all registered students and administrators.
               </p>
             </div>
 
@@ -824,9 +670,7 @@ export default function AdminPage() {
                   <tr className="border-b border-white/10 bg-white/[0.03] text-[var(--mist-dim)] uppercase">
                     <th className="p-4">Name</th>
                     <th className="p-4">Email</th>
-                    <th className="p-4">Role</th>
-                    <th className="p-4">Current Tier</th>
-                    <th className="p-4 text-right">Change Tier</th>
+                    <th className="p-4 text-right">Role</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -834,24 +678,8 @@ export default function AdminPage() {
                     <tr key={u._id} className="hover:bg-white/[0.02] transition-colors">
                       <td className="p-4 font-bold text-white">{u.name}</td>
                       <td className="p-4 text-[var(--mist-dim)]">{u.email}</td>
-                      <td className="p-4">
-                        <span className="badge badge-violet text-[10px]">{u.role}</span>
-                      </td>
-                      <td className="p-4">
-                        <span className={`badge badge-${u.tier} text-[10px] uppercase font-bold`}>
-                          {u.tier}
-                        </span>
-                      </td>
                       <td className="p-4 text-right">
-                        <select
-                          value={u.tier}
-                          onChange={(e) => handleUpdateUserTier(u._id, e.target.value)}
-                          className="bg-[var(--ink-700)] border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white cursor-pointer"
-                        >
-                          <option value="free">Free</option>
-                          <option value="basic">Basic</option>
-                          <option value="premium">Premium</option>
-                        </select>
+                        <span className="badge badge-violet text-[10px] uppercase font-bold">{u.role}</span>
                       </td>
                     </tr>
                   ))}

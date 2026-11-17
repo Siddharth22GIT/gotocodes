@@ -227,7 +227,7 @@ export default function HeroSection() {
           <Link href="/register" className="w-full sm:w-auto">
             <Button3D size="lg" className="w-full sm:w-auto">
               <Zap size={18} />
-              Start Learning Free
+              Start Learning
             </Button3D>
           </Link>
           <a href="#modules" className="w-full sm:w-auto">

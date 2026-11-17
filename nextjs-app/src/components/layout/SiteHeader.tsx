@@ -12,7 +12,6 @@ const NAV_LINKS = [
   { label: "Modules", href: "/#modules" },
   { label: "Resources", href: "/#resources" },
   { label: "Videos", href: "/#videos" },
-  { label: "Pricing", href: "/#pricing" },
   { label: "About", href: "/#about" },
 ];
 
@@ -29,12 +28,6 @@ export default function SiteHeader() {
   }, []);
 
   const handleLogout = () => { logout(); router.push("/"); setMobileOpen(false); };
-
-  const tierColor: Record<string, string> = {
-    free: "text-neutral-400",
-    basic: "text-neutral-300",
-    premium: "text-white",
-  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-2xl border-b border-white/[0.08] shadow-xl">
@@ -83,7 +76,7 @@ export default function SiteHeader() {
             {user ? (
               <>
                 <Link
-                  href={user.role === "admin" ? "/admin" : "/dashboard"}
+                  href={user.role === "admin" ? "/admin" : "/"}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors text-sm"
                   style={{ color: "var(--mist-dim)" }}
                   onMouseEnter={(e) => {
@@ -103,7 +96,6 @@ export default function SiteHeader() {
                   </div>
                   <span style={{ fontFamily: "JetBrains Mono", fontSize: "12px" }}>
                     {user.name.split(" ")[0]}
-                    <span className={`ml-1.5 ${tierColor[user.tier] || ""}`}>· {user.tier}</span>
                   </span>
                 </Link>
                 <Button3D size="sm" variant="ghost" onClick={handleLogout}>
@@ -125,7 +117,7 @@ export default function SiteHeader() {
                 <Link href="/register">
                   <Button3D size="sm">
                     <Zap size={14} />
-                    Join free
+                    Join now
                   </Button3D>
                 </Link>
               </>
@@ -167,8 +159,8 @@ export default function SiteHeader() {
                 <div className="flex gap-3 pt-3 mt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
                   {user ? (
                     <>
-                      <Link href={user.role === "admin" ? "/admin" : "/dashboard"} onClick={() => setMobileOpen(false)}>
-                        <Button3D size="sm" variant="ghost">Dashboard</Button3D>
+                      <Link href={user.role === "admin" ? "/admin" : "/"} onClick={() => setMobileOpen(false)}>
+                        <Button3D size="sm" variant="ghost">{user.role === "admin" ? "Admin Studio" : "Home"}</Button3D>
                       </Link>
                       <Button3D size="sm" variant="ghost" onClick={handleLogout}>Log out</Button3D>
                     </>
@@ -178,7 +170,7 @@ export default function SiteHeader() {
                         <Button3D size="sm" variant="ghost">Log in</Button3D>
                       </Link>
                       <Link href="/register" onClick={() => setMobileOpen(false)}>
-                        <Button3D size="sm">Join free</Button3D>
+                        <Button3D size="sm">Join now</Button3D>
                       </Link>
                     </>
                   )}

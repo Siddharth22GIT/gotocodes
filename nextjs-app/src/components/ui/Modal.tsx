@@ -14,7 +14,7 @@ interface ModalProps {
 
 const sizeMap = {
   sm: "max-w-md",
-  md: "max-w-lg",
+  md: "max-w-[460px]",
   lg: "max-w-2xl",
   xl: "max-w-4xl",
 };
@@ -45,7 +45,7 @@ export default function Modal({ open, onClose, children, title, size = "md" }: M
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/80 backdrop-blur-md overflow-y-auto"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/85 backdrop-blur-md overflow-y-auto"
           onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
           <motion.div
@@ -54,12 +54,12 @@ export default function Modal({ open, onClose, children, title, size = "md" }: M
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.97 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className={`w-full ${sizeMap[size]} my-auto flex flex-col rounded-2xl border border-white/12 bg-[#0A0A0A] shadow-[0_25px_80px_rgba(0,0,0,0.95)] max-h-[88vh] overflow-hidden relative`}
+            className={`w-full ${sizeMap[size]} my-auto flex flex-col rounded-2xl border border-white/12 bg-[#0A0A0A] shadow-[0_25px_80px_rgba(0,0,0,0.95)] max-h-[85vh] overflow-hidden relative`}
             onClick={(e) => e.stopPropagation()}
           >
             {title && (
-              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0 bg-[#0A0A0A] z-10">
-                <h2 className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: "Space Grotesk" }}>{title}</h2>
+              <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 shrink-0 bg-[#0A0A0A] z-10">
+                <h2 className="text-lg font-bold text-white tracking-tight" style={{ fontFamily: "Space Grotesk" }}>{title}</h2>
                 <button
                   type="button"
                   onClick={onClose}
@@ -70,7 +70,7 @@ export default function Modal({ open, onClose, children, title, size = "md" }: M
                 </button>
               </div>
             )}
-            <div className="p-6 overflow-y-auto flex-1 custom-modal-scroll" style={{ scrollbarWidth: "thin" }}>
+            <div className="p-4 sm:p-5 overflow-y-auto flex-1 custom-modal-scroll" style={{ scrollbarWidth: "thin" }}>
               {children}
             </div>
           </motion.div>

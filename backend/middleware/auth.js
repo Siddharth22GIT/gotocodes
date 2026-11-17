@@ -42,9 +42,5 @@ export const adminOnly = (req, res, next) => {
   return res.status(403).json({ message: "Admin access required." });
 };
 
-const tierRank = { free: 0, basic: 1, premium: 2 };
-
-// True if a user's tier meets or exceeds the required tier
-export const hasTierAccess = (userTier, requiredTier) => {
-  return tierRank[userTier || "free"] >= tierRank[requiredTier || "free"];
-};
+// Full access granted across all resources and modules
+export const hasTierAccess = () => true;
