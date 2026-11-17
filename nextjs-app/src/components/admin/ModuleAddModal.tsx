@@ -156,6 +156,33 @@ export default function ModuleAddModal({ open, onClose, onAdded }: ModuleAddModa
     setShortVideos((prev) => prev.filter((_, i) => i !== idx));
   };
 
+  const handleShortVideoThumbUpload = async (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      alert("Image must be under 8MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      updateShortVideo(idx, "bannerUrl", reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await api.post("/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (res.data?.url) {
+        updateShortVideo(idx, "bannerUrl", res.data.url);
+      }
+    } catch {
+      // FileReader base64 fallback is active
+    }
+  };
+
   // Handwritten notes helpers
   const addHandwrittenNote = () => {
     setHandwrittenNotes((prev) => [
@@ -592,27 +619,82 @@ export default function ModuleAddModal({ open, onClose, onAdded }: ModuleAddModa
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-white/80">Thumbnail Image URL</label>
-                        <input
-                          type="text"
-                          placeholder="https://... image URL (optional)"
-                          value={sv.bannerUrl || ""}
-                          onChange={(e) => updateShortVideo(idx, "bannerUrl", e.target.value)}
-                          className="input-field text-xs"
-                        />
-                      </div>
+                    {/* Thumbnail File Upload & Description */}
+                    <div className="space-y-2 pt-1 border-t border-white/5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
+                        {/* File Upload / Preview */}
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-semibold text-white/80 flex items-center justify-between">
+                            <span className="flex items-center gap-1.5">
+                              <ImageIcon size={13} className="text-white" />
+                              Thumbnail Image (Upload from device)
+                            </span>
+                            {sv.bannerUrl && (
+                              <button
+                                type="button"
+                                onClick={() => updateShortVideo(idx, "bannerUrl", "")}
+                                className="text-[10px] text-red-400 hover:text-red-300"
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </label>
 
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-white/80">Short Description</label>
-                        <input
-                          type="text"
-                          placeholder="Key takeaway or tip..."
-                          value={sv.description || ""}
-                          onChange={(e) => updateShortVideo(idx, "description", e.target.value)}
-                          className="input-field text-xs"
-                        />
+                          <div className="flex items-center gap-3">
+                            {sv.bannerUrl ? (
+                              <div className="relative w-16 h-24 rounded-lg overflow-hidden border border-white/20 bg-neutral-900 flex-shrink-0 group">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={sv.bannerUrl}
+                                  alt="Thumb preview"
+                                  className="w-full h-full object-cover"
+                                />
+                                <label
+                                  htmlFor={`sv-add-thumb-${idx}`}
+                                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer text-white text-[10px]"
+                                >
+                                  Change
+                                </label>
+                              </div>
+                            ) : null}
+
+                            <div className="flex-1 space-y-1.5">
+                              <label
+                                htmlFor={`sv-add-thumb-${idx}`}
+                                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-white/20 hover:border-white text-xs font-semibold text-white/90 hover:text-white bg-white/[0.03] hover:bg-white/[0.06] cursor-pointer transition-all w-full justify-center"
+                              >
+                                <Upload size={13} />
+                                {sv.bannerUrl ? "Replace image" : "Choose image from device"}
+                              </label>
+                              <input
+                                id={`sv-add-thumb-${idx}`}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => handleShortVideoThumbUpload(idx, e)}
+                              />
+                              <input
+                                type="text"
+                                placeholder="Or paste image URL directly..."
+                                value={sv.bannerUrl || ""}
+                                onChange={(e) => updateShortVideo(idx, "bannerUrl", e.target.value)}
+                                className="input-field text-[11px] py-1"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Short Description */}
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-semibold text-white/80">Short Description</label>
+                          <textarea
+                            rows={3}
+                            placeholder="Key takeaway, quick recap or tip..."
+                            value={sv.description || ""}
+                            onChange={(e) => updateShortVideo(idx, "description", e.target.value)}
+                            className="input-field text-xs resize-none"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>

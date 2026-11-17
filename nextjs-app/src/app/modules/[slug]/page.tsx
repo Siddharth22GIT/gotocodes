@@ -307,7 +307,7 @@ export default function ModuleDetailPage() {
                         <div>
                           <div
                             className="relative rounded-xl overflow-hidden mb-3 bg-neutral-900 border border-white/10"
-                            style={{ height: "220px" }}
+                            style={{ height: "310px" }}
                           >
                             {sv.bannerUrl ? (
                               // eslint-disable-next-line @next/next/no-img-element

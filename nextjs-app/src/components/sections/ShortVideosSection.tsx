@@ -92,10 +92,10 @@ export default function ShortVideosSection({ videos, onOpenAddVideo }: ShortVide
                 className="block"
                 onClick={(e) => handleVideoClick(e, video.instagramLink)}
               >
-                {/* Card: fixed height so they don't stretch the page */}
+                {/* Card: fixed height with vertical 9:16 proportions */}
                 <div
                   className="video-card relative overflow-hidden rounded-xl border border-white/10 hover:border-white/30"
-                  style={{ height: "280px" }}
+                  style={{ height: "360px" }}
                 >
                   {video.bannerUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -158,7 +158,7 @@ export default function ShortVideosSection({ videos, onOpenAddVideo }: ShortVide
                 type="button"
                 onClick={onOpenAddVideo}
                 className="w-full flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/20 hover:border-white bg-white/[0.02] hover:bg-white/[0.06] transition-all duration-300 group"
-                style={{ height: "280px" }}
+                style={{ height: "360px" }}
               >
                 <div
                   className="w-10 h-10 rounded-md flex items-center justify-center mb-2 bg-white/10 text-white group-hover:bg-white group-hover:text-black transition-all"

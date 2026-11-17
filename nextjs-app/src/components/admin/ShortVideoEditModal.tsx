@@ -56,11 +56,11 @@ export default function ShortVideoEditModal({
     }
   }, [video]);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError("Banner image size should be less than 5MB");
+      if (file.size > 8 * 1024 * 1024) {
+        setError("Banner image size should be less than 8MB");
         return;
       }
       const reader = new FileReader();
@@ -69,6 +69,19 @@ export default function ShortVideoEditModal({
         setError("");
       };
       reader.readAsDataURL(file);
+
+      try {
+        const formData = new FormData();
+        formData.append("image", file);
+        const res = await api.post("/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        if (res.data?.url) {
+          setBannerUrl(res.data.url);
+        }
+      } catch {
+        // Fallback to base64
+      }
     }
   };
 

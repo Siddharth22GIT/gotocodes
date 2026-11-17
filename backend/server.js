@@ -1,7 +1,15 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import multer from "multer";
+import fs from "fs";
 import connectDB from "./config/db.js";
+import { protect, adminOnly } from "./middleware/auth.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import authRoutes from "./routes/authRoutes.js";
 import moduleRoutes from "./routes/moduleRoutes.js";
@@ -67,6 +75,35 @@ app.use(
   })
 );
 app.use(express.json({ limit: "10mb" }));
+
+// ── Static file serving for uploaded images ──────────────────────────────────
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+app.use("/uploads", express.static(uploadsDir));
+
+// ── Multer disk storage ───────────────────────────────────────────────────────
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadsDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname) || ".jpg";
+    cb(null, `img_${Date.now()}${ext}`);
+  },
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 8 * 1024 * 1024 }, // 8 MB max
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(new Error("Only image files are allowed"));
+  },
+});
+
+// ── Image upload endpoint (admin only via auth header check) ──────────────────
+app.post("/api/upload", protect, adminOnly, upload.single("image"), (req, res) => {
+  if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+  const url = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+  res.json({ url });
+});
 
 app.get("/api/health", (req, res) => res.json({ status: "ok", service: "gotocodes-api" }));
 
