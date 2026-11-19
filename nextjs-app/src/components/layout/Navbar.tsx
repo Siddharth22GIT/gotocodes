@@ -7,6 +7,7 @@ import { Menu, X, Zap, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import Button3D from "@/components/ui/Button3D";
+import ProfileModal, { getPersona } from "@/components/ui/ProfileModal";
 
 const NAV_LINKS = [
   { label: "Modules", href: "/#modules" },
@@ -18,6 +19,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -69,18 +71,33 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
-              <Link
-                href={user.role === "admin" ? "/admin" : "/"}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-sm"
-              >
-                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-black"
-                  style={{ background: "linear-gradient(135deg, #FFFFFF, #888888)" }}>
-                  {user.name[0].toUpperCase()}
-                </div>
-                <span className="text-[var(--mist-dim)]" style={{ fontFamily: "JetBrains Mono", fontSize: "12px" }}>
-                  {user.name.split(" ")[0]}
-                </span>
-              </Link>
+              {(() => {
+                const persona = getPersona(user);
+                const isAdmin = user.role === "admin" || user.email === "admin@gotocodes.dev";
+                return (
+                  <button
+                    type="button"
+                    onClick={() => setProfileOpen(true)}
+                    className="flex items-center gap-2.5 px-3 py-1.5 rounded-full hover:bg-white/10 border border-white/10 hover:border-white/30 transition-all text-sm group"
+                    title="Open Profile"
+                  >
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-xs transition-transform group-hover:scale-110"
+                      style={{
+                        border: `1.5px solid ${persona.border}`,
+                        boxShadow: persona.glow,
+                        background: persona.bgGradient,
+                      }}
+                    >
+                      <span>{persona.icon}</span>
+                    </div>
+                    <span className="text-white font-medium text-xs flex items-center gap-1" style={{ fontFamily: "Space Grotesk" }}>
+                      {user.name.split(" ")[0]}
+                      {isAdmin && <span className="text-[10px] text-amber-400 font-bold">👑</span>}
+                    </span>
+                  </button>
+                );
+              })()}
               <Button3D size="sm" variant="ghost" onClick={handleLogout}>
                 Log out
               </Button3D>
@@ -142,9 +159,18 @@ export default function Navbar() {
               <div className="flex gap-3 pt-3 border-t border-white/5 mt-2">
                 {user ? (
                   <>
-                    <Link href={user.role === "admin" ? "/admin" : "/"} onClick={() => setOpen(false)}>
-                      <Button3D size="sm" variant="ghost">{user.role === "admin" ? "Admin Studio" : "Home"}</Button3D>
-                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpen(false);
+                        setProfileOpen(true);
+                      }}
+                      className="flex-1"
+                    >
+                      <Button3D size="sm" variant="ghost" className="w-full">
+                        {user.role === "admin" ? "👑 Admin Profile" : "👤 My Profile"}
+                      </Button3D>
+                    </button>
                     <Button3D size="sm" variant="ghost" onClick={handleLogout}>Log out</Button3D>
                   </>
                 ) : (
@@ -162,6 +188,8 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
     </header>
   );
 }

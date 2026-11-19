@@ -37,7 +37,7 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const newUser = await register(name, email, password);
+      const newUser = await register(name, email, password, selectedAvatar);
       if (newUser?.role === "admin") {
         router.push("/admin");
       } else {

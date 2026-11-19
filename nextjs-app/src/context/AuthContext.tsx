@@ -18,7 +18,8 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<User>;
-  register: (name: string, email: string, password: string) => Promise<User>;
+  register: (name: string, email: string, password: string, avatarSeed?: string) => Promise<User>;
+  updateProfile: (data: { name?: string; avatarSeed?: string }) => Promise<User>;
   logout: () => void;
   setUser: (user: User | null) => void;
 }
@@ -49,9 +50,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return res.data.user;
   };
 
-  const register = async (name: string, email: string, password: string): Promise<User> => {
-    const res = await api.post("/auth/register", { name, email, password });
+  const register = async (name: string, email: string, password: string, avatarSeed?: string): Promise<User> => {
+    const res = await api.post("/auth/register", { name, email, password, avatarSeed });
     localStorage.setItem("gotocodes_token", res.data.token);
+    setUser(res.data.user);
+    return res.data.user;
+  };
+
+  const updateProfile = async (data: { name?: string; avatarSeed?: string }): Promise<User> => {
+    const res = await api.put("/auth/profile", data);
     setUser(res.data.user);
     return res.data.user;
   };
@@ -62,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, setUser, loading, login, register, updateProfile, logout }}>
       {children}
     </AuthContext.Provider>
   );

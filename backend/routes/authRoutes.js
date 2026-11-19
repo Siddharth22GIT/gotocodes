@@ -8,7 +8,7 @@ const router = express.Router();
 // @route POST /api/auth/register
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, avatarSeed } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Name, email and password are all required." });
     }
@@ -29,6 +29,7 @@ router.post("/register", async (req, res) => {
       password,
       role: isAdmin ? "admin" : "student",
       tier: isAdmin ? "premium" : "free",
+      avatarSeed: avatarSeed || (isAdmin ? "admin-crown" : "pixel-wizard"),
     });
     res.status(201).json({ user: user.toSafeObject(), token: generateToken(user._id) });
   } catch (err) {
@@ -69,10 +70,30 @@ router.get("/me", protect, async (req, res) => {
   res.json({ user: req.user.toSafeObject ? req.user.toSafeObject() : req.user });
 });
 
+// @route PUT /api/auth/profile
+router.put("/profile", protect, async (req, res) => {
+  try {
+    const { name, avatarSeed } = req.body;
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    if (name && name.trim()) user.name = name.trim();
+    if (avatarSeed) user.avatarSeed = avatarSeed;
+
+    await user.save();
+    res.json({ user: user.toSafeObject() });
+  } catch (err) {
+    res.status(500).json({ message: "Could not update profile.", error: err.message });
+  }
+});
+
 // @route PUT /api/auth/change-password
 router.put("/change-password", protect, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
+    if (!currentPassword) {
+      return res.status(400).json({ message: "Current password is required." });
+    }
     if (!newPassword || newPassword.length < 6) {
       return res.status(400).json({ message: "New password must be at least 6 characters." });
     }
@@ -80,7 +101,7 @@ router.put("/change-password", protect, async (req, res) => {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found." });
 
-    if (currentPassword && !(await user.matchPassword(currentPassword))) {
+    if (!(await user.matchPassword(currentPassword))) {
       return res.status(400).json({ message: "Current password does not match." });
     }
 
