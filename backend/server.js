@@ -31,10 +31,15 @@ const initAdmin = async () => {
     const adminEmail = "admin@gotocodes.dev";
     let admin = await User.findOne({ email: adminEmail });
     if (!admin) {
+      const adminPassword = process.env.ADMIN_PASSWORD;
+      if (!adminPassword) {
+        console.warn("⚠️  ADMIN_PASSWORD env var not set — skipping admin auto-creation.");
+        return;
+      }
       await User.create({
         name: "GotoCodes Admin",
         email: adminEmail,
-        password: "AdminSid@123",
+        password: adminPassword,
         role: "admin",
         tier: "premium",
       });

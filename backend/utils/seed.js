@@ -13,16 +13,21 @@ const run = async () => {
   const adminEmail = "admin@gotocodes.dev";
   let admin = await User.findOne({ email: adminEmail });
   if (!admin) {
-    admin = await User.create({
-      name: "GotoCodes Admin",
-      email: adminEmail,
-      password: "AdminSid@123",
-      role: "admin",
-      tier: "premium",
-    });
-    console.log("Created admin user -> email: admin@gotocodes.dev / password: admin123");
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) {
+      console.warn("⚠️  ADMIN_PASSWORD env var not set — skipping admin seed. Set it in your .env file.");
+    } else {
+      admin = await User.create({
+        name: "GotoCodes Admin",
+        email: adminEmail,
+        password: adminPassword,
+        role: "admin",
+        tier: "premium",
+      });
+      console.log("Created admin user -> email: admin@gotocodes.dev");
+    }
   } else {
-    console.log("Admin user already exists -> email: admin@gotocodes.dev / password: admin123");
+    console.log("Admin user already exists -> email: admin@gotocodes.dev");
   }
 
   await SiteSettings.findOneAndUpdate(

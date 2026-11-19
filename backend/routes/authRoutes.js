@@ -45,17 +45,6 @@ router.post("/login", async (req, res) => {
 
     let user = await User.findOne({ email: normalizedEmail });
 
-    // Auto-create default admin account on first login attempt if missing from database
-    if (!user && normalizedEmail === "admin@gotocodes.dev" && (password === "AdminSid@123" || password === "admin123")) {
-      user = await User.create({
-        name: "GotoCodes Admin",
-        email: "admin@gotocodes.dev",
-        password: "AdminSid@123",
-        role: "admin",
-        tier: "premium",
-      });
-    }
-
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ message: "Incorrect email or password." });
     }
