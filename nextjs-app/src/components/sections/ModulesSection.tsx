@@ -137,10 +137,7 @@ export default function ModulesSection({ modules, onOpenAdd }: ModulesSectionPro
                       {mod.description || "Dive deep into this module to master the concepts."}
                     </p>
 
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs" style={{ fontFamily: "JetBrains Mono", color: "var(--mist-faint)" }}>
-                        {(mod.lessonCount ?? mod.lessons?.length ?? 0)} lesson{(mod.lessonCount ?? mod.lessons?.length ?? 0) !== 1 ? "s" : ""}
-                      </span>
+                    <div className="flex items-center justify-end pt-1">
                       <span className="flex items-center gap-1.5 text-sm font-semibold group-hover:gap-2.5 transition-all text-white/60 group-hover:text-white">
                         Explore <ArrowRight size={14} />
                       </span>

@@ -40,6 +40,17 @@ const PRESET_BANNERS = [
   { name: "Sunset Synth", url: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80" },
 ];
 
+const STANDARD_CATEGORIES = [
+  "DSA",
+  "C++",
+  "Python",
+  "JavaScript",
+  "MERN",
+  "System Design",
+  "Core CSE",
+  "Interview",
+];
+
 export default function ModuleEditModal({
   open,
   onClose,
@@ -48,7 +59,8 @@ export default function ModuleEditModal({
 }: ModuleEditModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [language, setLanguage] = useState("DSA");
+  const [categoryChoice, setCategoryChoice] = useState("DSA");
+  const [customCategory, setCustomCategory] = useState("");
   const [tier, setTier] = useState<"free" | "basic" | "premium">("free");
   const [bannerUrl, setBannerUrl] = useState("");
 
@@ -65,7 +77,15 @@ export default function ModuleEditModal({
     if (moduleData) {
       setTitle(moduleData.title || "");
       setDescription(moduleData.description || "");
-      setLanguage(moduleData.language || "DSA");
+      const modLang = moduleData.language || "DSA";
+      const isStandard = STANDARD_CATEGORIES.some((c) => c.toLowerCase() === modLang.toLowerCase());
+      if (isStandard) {
+        setCategoryChoice(modLang);
+        setCustomCategory("");
+      } else {
+        setCategoryChoice("custom");
+        setCustomCategory(modLang);
+      }
       setTier(moduleData.tier || "free");
       setBannerUrl(moduleData.bannerUrl || "");
       setReadingMaterials(moduleData.readingMaterials || []);
@@ -219,14 +239,22 @@ export default function ModuleEditModal({
       return;
     }
 
+    if (categoryChoice === "custom" && !customCategory.trim()) {
+      setError("Please enter a custom category name.");
+      setActiveSubTab("general");
+      return;
+    }
+
     if (!moduleData?._id) return;
 
     setIsSubmitting(true);
     setError("");
 
+    const finalCategory = categoryChoice === "custom" ? customCategory.trim() : categoryChoice.trim();
+
     const payload = {
       title: title.trim(),
-      language: language.trim() || "Tech",
+      language: finalCategory || "Tech",
       description: description.trim(),
       bannerUrl: bannerUrl || PRESET_BANNERS[0].url,
       tier,
@@ -385,12 +413,12 @@ export default function ModuleEditModal({
               />
             </div>
 
-            {/* Category / Language */}
+            {/* Category */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-white">Category / Language</label>
+              <label className="text-xs font-semibold uppercase tracking-wider text-white">Category</label>
               <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
+                value={categoryChoice}
+                onChange={(e) => setCategoryChoice(e.target.value)}
                 className="input-field text-xs bg-neutral-900 text-white cursor-pointer"
               >
                 <option value="DSA">DSA (Data Structures & Algos)</option>
@@ -401,7 +429,25 @@ export default function ModuleEditModal({
                 <option value="System Design">System Design</option>
                 <option value="Core CSE">Core CSE (OS, DBMS, CN)</option>
                 <option value="Interview">Interview Prep</option>
+                <option value="custom">+ Custom Category (Type your own)...</option>
               </select>
+
+              {categoryChoice === "custom" && (
+                <div className="pt-1.5 space-y-1">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter custom category name (e.g. Web3, Rust, AI/ML)..."
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    className="input-field text-xs font-semibold"
+                    autoFocus
+                  />
+                  <p className="text-[11px] text-neutral-400">
+                    This custom category applies only to this module without changing the global category list.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}

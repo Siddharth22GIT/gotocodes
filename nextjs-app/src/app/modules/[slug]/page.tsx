@@ -6,6 +6,7 @@ import Link from "next/link";
 import {
   BookOpen,
   ArrowLeft,
+  ArrowRight,
   CheckCircle2,
   Play,
   FileCode,
@@ -242,36 +243,39 @@ export default function ModuleDetailPage() {
                 ) : (
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {moduleData.readingMaterials.map((rm: any, idx: number) => (
-                      <GlowCard key={idx} className="p-5 flex flex-col justify-between rounded-xl">
-                        <div>
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="badge badge-violet text-[10px] font-bold">
-                              Capsule #{idx + 1}
-                            </span>
-                            <FileText size={16} className="text-neutral-400" />
+                      <a
+                        key={idx}
+                        href={rm.fileUrl || "#"}
+                        target="_self"
+                        className="block group h-full focus:outline-none"
+                      >
+                        <GlowCard className="p-5 h-full flex flex-col justify-between rounded-xl border border-white/10 group-hover:border-white/30 transition-all cursor-pointer">
+                          <div>
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="badge badge-violet text-[10px] font-bold">
+                                Capsule #{idx + 1}
+                              </span>
+                              <FileText size={16} className="text-neutral-400 group-hover:text-white transition-colors" />
+                            </div>
+                            <h4 className="font-bold text-white text-base mb-1 group-hover:text-white transition-colors" style={{ fontFamily: "Space Grotesk" }}>
+                              {rm.title}
+                            </h4>
+                            {rm.description && (
+                              <p className="text-xs text-neutral-400 line-clamp-2 mb-4">
+                                {rm.description}
+                              </p>
+                            )}
                           </div>
-                          <h4 className="font-bold text-white text-base mb-1" style={{ fontFamily: "Space Grotesk" }}>
-                            {rm.title}
-                          </h4>
-                          {rm.description && (
-                            <p className="text-xs text-neutral-400 line-clamp-2 mb-4">
-                              {rm.description}
-                            </p>
-                          )}
-                        </div>
 
-                        <div className="pt-4 border-t border-white/10 mt-4 flex items-center justify-between">
-                          <span className="text-[11px] font-mono text-neutral-500">PDF Document</span>
-                          <a
-                            href={rm.fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-3 py-1.5 rounded-md text-xs font-semibold bg-white text-black hover:bg-neutral-200 border border-white transition-all flex items-center gap-1.5"
-                          >
-                            <Download size={13} /> Open / Download
-                          </a>
-                        </div>
-                      </GlowCard>
+                          <div className="pt-4 border-t border-white/10 mt-4 flex items-center justify-between">
+                            <span className="text-[11px] font-mono text-neutral-500">Reading Capsule</span>
+                            <span className="px-3 py-1.5 rounded-md text-xs font-semibold bg-white/10 group-hover:bg-white text-white group-hover:!text-black border border-white/20 group-hover:border-white transition-all flex items-center gap-1.5">
+                              <span>Read Capsule</span>
+                              <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5 group-hover:!stroke-black group-hover:!text-black" />
+                            </span>
+                          </div>
+                        </GlowCard>
+                      </a>
                     ))}
                   </div>
                 )}
@@ -373,36 +377,39 @@ export default function ModuleDetailPage() {
                 ) : (
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {moduleData.handwrittenNotes.map((hn: any, idx: number) => (
-                      <GlowCard key={idx} className="p-5 flex flex-col justify-between rounded-xl">
-                        <div>
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="badge badge-violet text-[10px] font-bold">
-                              Notes #{idx + 1}
-                            </span>
-                            <PenTool size={16} className="text-neutral-400" />
+                      <a
+                        key={idx}
+                        href={hn.fileUrl || "#"}
+                        target="_self"
+                        className="block group h-full focus:outline-none"
+                      >
+                        <GlowCard className="p-5 h-full flex flex-col justify-between rounded-xl border border-white/10 group-hover:border-white/30 transition-all cursor-pointer">
+                          <div>
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="badge badge-violet text-[10px] font-bold">
+                                Notes #{idx + 1}
+                              </span>
+                              <PenTool size={16} className="text-neutral-400 group-hover:text-white transition-colors" />
+                            </div>
+                            <h4 className="font-bold text-white text-base mb-1 group-hover:text-white transition-colors" style={{ fontFamily: "Space Grotesk" }}>
+                              {hn.title}
+                            </h4>
+                            {hn.description && (
+                              <p className="text-xs text-neutral-400 line-clamp-2 mb-4">
+                                {hn.description}
+                              </p>
+                            )}
                           </div>
-                          <h4 className="font-bold text-white text-base mb-1" style={{ fontFamily: "Space Grotesk" }}>
-                            {hn.title}
-                          </h4>
-                          {hn.description && (
-                            <p className="text-xs text-neutral-400 line-clamp-2 mb-4">
-                              {hn.description}
-                            </p>
-                          )}
-                        </div>
 
-                        <div className="pt-4 border-t border-white/10 mt-4 flex items-center justify-between">
-                          <span className="text-[11px] font-mono text-neutral-500">Handwritten PDF</span>
-                          <a
-                            href={hn.fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-3 py-1.5 rounded-md text-xs font-semibold bg-white text-black hover:bg-neutral-200 border border-white transition-all flex items-center gap-1.5"
-                          >
-                            <Download size={13} /> View Notes
-                          </a>
-                        </div>
-                      </GlowCard>
+                          <div className="pt-4 border-t border-white/10 mt-4 flex items-center justify-between">
+                            <span className="text-[11px] font-mono text-neutral-500">Handwritten Notes</span>
+                            <span className="px-3 py-1.5 rounded-md text-xs font-semibold bg-white/10 group-hover:bg-white text-white group-hover:!text-black border border-white/20 group-hover:border-white transition-all flex items-center gap-1.5">
+                              <span>View Notes</span>
+                              <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5 group-hover:!stroke-black group-hover:!text-black" />
+                            </span>
+                          </div>
+                        </GlowCard>
+                      </a>
                     ))}
                   </div>
                 )}

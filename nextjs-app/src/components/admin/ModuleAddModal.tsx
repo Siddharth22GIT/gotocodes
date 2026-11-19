@@ -69,7 +69,8 @@ const PRESET_BANNERS = [
 export default function ModuleAddModal({ open, onClose, onAdded }: ModuleAddModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [language, setLanguage] = useState("DSA");
+  const [categoryChoice, setCategoryChoice] = useState("DSA");
+  const [customCategory, setCustomCategory] = useState("");
   const [tier, setTier] = useState<"free" | "basic" | "premium">("free");
   const [bannerUrl, setBannerUrl] = useState("");
   const [customUrl, setCustomUrl] = useState("");
@@ -226,6 +227,12 @@ export default function ModuleAddModal({ open, onClose, onAdded }: ModuleAddModa
       return;
     }
 
+    if (categoryChoice === "custom" && !customCategory.trim()) {
+      setError("Please enter a custom category name.");
+      setActiveSubTab("general");
+      return;
+    }
+
     setIsSubmitting(true);
     setError("");
 
@@ -237,10 +244,12 @@ export default function ModuleAddModal({ open, onClose, onAdded }: ModuleAddModa
       "-" +
       Date.now().toString().slice(-4);
 
+    const finalCategory = categoryChoice === "custom" ? customCategory.trim() : categoryChoice.trim();
+
     const payload: ModuleData = {
       title: title.trim(),
       slug,
-      language: language.trim() || "Tech",
+      language: finalCategory || "Tech",
       description: description.trim(),
       bannerUrl: bannerUrl || customUrl || PRESET_BANNERS[0].url,
       tier,
@@ -268,6 +277,8 @@ export default function ModuleAddModal({ open, onClose, onAdded }: ModuleAddModa
       // Reset
       setTitle("");
       setDescription("");
+      setCategoryChoice("DSA");
+      setCustomCategory("");
       setBannerUrl("");
       setCustomUrl("");
       setReadingMaterials([]);
@@ -419,12 +430,12 @@ export default function ModuleAddModal({ open, onClose, onAdded }: ModuleAddModa
               />
             </div>
 
-            {/* Category / Language */}
+            {/* Category */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-white">Category / Language</label>
+              <label className="text-xs font-semibold uppercase tracking-wider text-white">Category</label>
               <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
+                value={categoryChoice}
+                onChange={(e) => setCategoryChoice(e.target.value)}
                 className="input-field text-xs bg-neutral-900 text-white cursor-pointer"
               >
                 <option value="DSA">DSA (Data Structures & Algos)</option>
@@ -435,7 +446,25 @@ export default function ModuleAddModal({ open, onClose, onAdded }: ModuleAddModa
                 <option value="System Design">System Design</option>
                 <option value="Core CSE">Core CSE (OS, DBMS, CN)</option>
                 <option value="Interview">Interview Prep</option>
+                <option value="custom">+ Custom Category (Type your own)...</option>
               </select>
+
+              {categoryChoice === "custom" && (
+                <div className="pt-1.5 space-y-1">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter custom category name (e.g. Web3, Rust, AI/ML)..."
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    className="input-field text-xs font-semibold"
+                    autoFocus
+                  />
+                  <p className="text-[11px] text-neutral-400">
+                    This custom category applies only to this module without changing the global category list.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
