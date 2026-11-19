@@ -76,14 +76,14 @@ export default function SiteHeader() {
           {/* Desktop Auth */}
           <div className="hidden md:flex items-center gap-3">
             {user ? (
-              <>
+              <div className="relative">
                 {(() => {
                   const persona = getPersona(user);
                   const isAdmin = user.role === "admin" || user.email === "admin@gotocodes.dev";
                   return (
                     <button
                       type="button"
-                      onClick={() => setProfileOpen(true)}
+                      onClick={() => setProfileOpen((p) => !p)}
                       className="flex items-center gap-2.5 px-3 py-1.5 rounded-full hover:bg-white/10 border border-white/10 hover:border-white/30 transition-all text-sm group"
                       title="Open Profile"
                     >
@@ -101,13 +101,16 @@ export default function SiteHeader() {
                         {user.name.split(" ")[0]}
                         {isAdmin && <span className="text-[10px] text-amber-400 font-bold">👑</span>}
                       </span>
+                      <ChevronDown
+                        size={12}
+                        className={`text-neutral-400 transition-transform duration-200 ${profileOpen ? "rotate-180 text-white" : ""}`}
+                      />
                     </button>
                   );
                 })()}
-                <Button3D size="sm" variant="ghost" onClick={handleLogout}>
-                  Log out
-                </Button3D>
-              </>
+
+                <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
+              </div>
             ) : (
               <>
                 <Link href="/login">
@@ -196,7 +199,10 @@ export default function SiteHeader() {
         </AnimatePresence>
       </nav>
 
-      <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
+      {/* Mobile Profile Popup */}
+      <div className="md:hidden">
+        <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} isMobile={true} />
+      </div>
     </header>
   );
 }
